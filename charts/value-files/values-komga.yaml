@@ -8,8 +8,8 @@ service:
       cpu: 200m
       memory: 512Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 1
+      memory: 1024Mi
   livenessProbe:
     httpGet:
       path: /komga/actuator/health
@@ -24,6 +24,14 @@ service:
     initialDelaySeconds: 30
     periodSeconds: 5
   httpRoutePath: "/komga"
+  volumeMounts:
+    - name: config
+      mountPath: /config
+      subPath: komga
+    - name: media
+      mountPath: /data
+      subPath: media/books
+  env:
 
 securityContext:
   runAsUser: 1000
@@ -33,7 +41,7 @@ securityContext:
 hostnames: []
 
 storage:
-  storageClass: local-path
-  localPath: /home/rydra/komga-data
+  configClaimName: config-pvc
+  mediaClaimName: media-pvc
 
 gatewayClassName: traefik

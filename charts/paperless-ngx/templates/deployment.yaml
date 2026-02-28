@@ -18,17 +18,15 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: {{ .Values.storage.configClaimName }}
-        - name: media-storage
+        - name: media
           persistentVolumeClaim:
             claimName: {{ .Values.storage.mediaClaimName }}
-        - name: hwaccel
-          hostPath:
-            path: /dev/dri
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
+
       containers:
-        - image: {{ .Values.service.image }}
-          name: {{ .Values.service.name }}
+        - name: {{ .Values.service.name }}
+          image: {{ .Values.service.image }}
           resources:
             {{- toYaml .Values.service.resources | nindent 12 }}
           livenessProbe:
@@ -40,8 +38,42 @@ spec:
               protocol: TCP
           volumeMounts:
             {{- toYaml .Values.service.volumeMounts | nindent 12 }}
-            - name: hwaccel
-              mountPath: /dev/dri
           envFrom:
             - configMapRef:
                 name: {{ .Values.service.name }}-config
+
+        - name: broker
+          image: docker.io/library/redis:7
+          volumeMounts:
+            - name: config
+              mountPath: /data
+              subPath: paperless-ngx/redis
+
+        - name: db
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            fsGroup: 0
+          image: docker.io/library/postgres:15
+          volumeMounts:
+            - name: config
+              mountPath: /var/lib/postgresql/data
+              subPath: paperless-ngx/postgres
+          env:
+            - name: POSTGRES_USER
+              value: paperless
+            - name: POSTGRES_PASSWORD
+              value: paperless
+            - name: POSTGRES_DB
+              value: paperless
+
+        - name: gotenberg
+          image: docker.io/gotenberg/gotenberg:7.10
+          command:
+            - gotenberg
+          args:
+            - "--chromium-disable-javascript=true"
+            - "--chromium-allow-list=file:///tmp/.*"
+
+        - name: tika
+          image: apache/tika:3.2.3.0-full

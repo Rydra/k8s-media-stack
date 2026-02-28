@@ -6,6 +6,8 @@ metadata:
   name: {{ .Values.service.name }}
 spec:
   replicas: {{ .Values.service.replicas }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Values.service.name }}
@@ -21,9 +23,6 @@ spec:
         - name: media-storage
           persistentVolumeClaim:
             claimName: {{ .Values.storage.mediaClaimName }}
-        - name: hwaccel
-          hostPath:
-            path: /dev/dri
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
       containers:
@@ -38,10 +37,17 @@ spec:
           ports:
             - containerPort: {{ .Values.service.servicePort }}
               protocol: TCP
+            # Need to open these ports in the host, otherwise
+            # we won't be able to connect to the torrent swarm.
+            # We could also configure new traefik routers for these ports
+            - containerPort: {{ .Values.service.torrentingPort }}
+              protocol: TCP
+              hostPort: {{ .Values.service.torrentingPort }}
+            - containerPort: {{ .Values.service.torrentingPort }}
+              protocol: UDP
+              hostPort: {{ .Values.service.torrentingPort }}
           volumeMounts:
             {{- toYaml .Values.service.volumeMounts | nindent 12 }}
-            - name: hwaccel
-              mountPath: /dev/dri
           envFrom:
             - configMapRef:
                 name: {{ .Values.service.name }}-config

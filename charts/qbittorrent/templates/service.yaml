@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.service.name }}
+  name: {{ .Values.service.name }}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.servicePort }}
+      targetPort: {{ .Values.service.servicePort }}
+    - name: bittorrent-tcp
+      protocol: TCP
+      port: {{ .Values.service.torrentingPort }}
+      targetPort: {{ .Values.service.torrentingPort }}
+    - name: bittorrent-udp
+      protocol: UDP
+      port: {{ .Values.service.torrentingPort }}
+      targetPort: {{ .Values.service.torrentingPort }}
+  selector:
+    app.kubernetes.io/name: {{ .Values.service.name }}

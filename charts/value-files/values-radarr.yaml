@@ -1,0 +1,39 @@
+service:
+  name: radarr
+  image: "lscr.io/linuxserver/radarr:latest"
+  replicas: 1
+  servicePort: 7878
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1024Mi
+  livenessProbe:
+  readinessProbe:
+  httpRoutePath: "/radarr"
+  volumeMounts:
+    - name: config
+      mountPath: /config
+      subPath: radarr
+    - name: media
+      mountPath: /downloads
+      subPath: downloads
+    - name: media
+      mountPath: /media/movies
+      subPath: media/movies
+  env:
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+hostnames: []
+
+storage:
+  configClaimName: config-pvc
+  mediaClaimName: media-pvc
+
+gatewayClassName: traefik

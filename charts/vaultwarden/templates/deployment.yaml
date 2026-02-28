@@ -2,28 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.service.name }}
+    app: {{ .Values.service.name }}
   name: {{ .Values.service.name }}
 spec:
   replicas: {{ .Values.service.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ .Values.service.name }}
+      app: {{ .Values.service.name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ .Values.service.name }}
+        app: {{ .Values.service.name }}
     spec:
       volumes:
         - name: config
           persistentVolumeClaim:
             claimName: {{ .Values.storage.configClaimName }}
-        - name: media-storage
-          persistentVolumeClaim:
-            claimName: {{ .Values.storage.mediaClaimName }}
-        - name: hwaccel
-          hostPath:
-            path: /dev/dri
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
       containers:
@@ -40,8 +34,6 @@ spec:
               protocol: TCP
           volumeMounts:
             {{- toYaml .Values.service.volumeMounts | nindent 12 }}
-            - name: hwaccel
-              mountPath: /dev/dri
           envFrom:
             - configMapRef:
                 name: {{ .Values.service.name }}-config

@@ -1,0 +1,11 @@
+apiVersion: v2
+name: basechart
+description: A Helm chart for Komga
+
+# A chart can be either an 'application' or a 'library' chart. A library chart
+# is a collection of templates that can be re-used in other charts.
+type: application
+
+version: 0.1.0
+
+appVersion: "0.1.0"

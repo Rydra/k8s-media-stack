@@ -18,12 +18,9 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: {{ .Values.storage.configClaimName }}
-        - name: media-storage
+        - name: media
           persistentVolumeClaim:
             claimName: {{ .Values.storage.mediaClaimName }}
-        - name: hwaccel
-          hostPath:
-            path: /dev/dri
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
       containers:
@@ -40,8 +37,6 @@ spec:
               protocol: TCP
           volumeMounts:
             {{- toYaml .Values.service.volumeMounts | nindent 12 }}
-            - name: hwaccel
-              mountPath: /dev/dri
           envFrom:
             - configMapRef:
                 name: {{ .Values.service.name }}-config

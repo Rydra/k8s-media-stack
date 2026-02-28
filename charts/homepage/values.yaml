@@ -1,0 +1,32 @@
+service:
+  name: homepage
+  image: "ghcr.io/gethomepage/homepage:latest"
+  replicas: 1
+  servicePort: 3000
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      #cpu: 1
+      #memory: 1024Mi
+  livenessProbe:
+  readinessProbe:
+  httpRoutePath: "/"
+  volumeMounts:
+  env:
+    HOMEPAGE_ALLOWED_HOSTS: "home.local"
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+hostnames:
+  - home.local
+
+storage:
+  configClaimName: config-pvc
+  mediaClaimName: media-pvc
+
+gatewayClassName: traefik

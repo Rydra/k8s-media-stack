@@ -2,4 +2,6 @@ name: local
 
 storage:
   storageClass: local-path
-  localPath: /home/rydra/komga-data
+  configsPath: /mnt/md0/storage/configs
+  mediaStoragePath: /mnt/md0/storage/storage
+  immichStoragePath: /mnt/md0/storage/immich

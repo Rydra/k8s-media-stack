@@ -1,8 +1,9 @@
 service:
-  name: jellyfin
-  image: "jellyfin/jellyfin:latest"
+  name: qbittorrent
+  image: "linuxserver/qbittorrent:latest"
   replicas: 1
-  servicePort: 8096
+  servicePort: 8080
+  torrentingPort: 6881  # Default: 6881 - This is the only one I have open in my router!
   resources:
     requests:
       cpu: 200m
@@ -23,21 +24,24 @@ service:
     #   port: 25600
     # initialDelaySeconds: 30
     # periodSeconds: 5
-  httpRoutePath: "/jellyfin"
+  httpRoutePath: "/"
   volumeMounts:
     - name: config
       mountPath: /config
-      subPath: jellyfin
+      subPath: qbittorrent
     - name: media-storage
-      mountPath: /data
-      subPath: media
+      mountPath: /downloads
+      subPath: downloads
 
 securityContext:
   runAsUser: 1000
   runAsGroup: 1000
   fsGroup: 1000
 
-hostnames: []
+hostnames:
+  # QBittorrent is a PITA to set up with subpaths since it doesn't support
+  # URL base paths, so we'll just give it its own hostname and route to it
+  - qbit.local
 
 storage:
   configClaimName: config-pvc
