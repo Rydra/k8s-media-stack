@@ -1,0 +1,5 @@
+name: local
+
+storage:
+  storageClass: local-path
+  localPath: /home/rydra/komga-data

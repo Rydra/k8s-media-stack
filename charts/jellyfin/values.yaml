@@ -1,0 +1,39 @@
+service:
+  name: jellyfin
+  image: "linuxserver/jellyfin:latest"
+  replicas: 1
+  servicePort: 8096
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      #cpu: 500m
+      #memory: 512Mi
+  livenessProbe:
+    # httpGet:
+    #   path: /komga/actuator/health
+    #   port: 25600
+    # initialDelaySeconds: 30
+    # periodSeconds: 10
+    # failureThreshold: 1
+  readinessProbe:
+    # httpGet:
+    #   path: /komga/actuator/health
+    #   port: 25600
+    # initialDelaySeconds: 30
+    # periodSeconds: 5
+  httpRoutePath: "/"
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+hostnames: []
+
+storage:
+  storageClass: local-path
+  localPath: /home/rydra/komga-data
+
+gatewayClassName: traefik
