@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    // Official Kubernetes extension with syntax highlighting,
+    // autocompletion, linting, and more
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+
+    // Yaml autocomplete
+    "redhat.vscode-yaml",
+
+    // For Go templates (deployment.yaml, service.yaml, etc.)
+    "golang.go"
+]
+}

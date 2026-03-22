@@ -3,7 +3,7 @@ service:
   image: "linuxserver/qbittorrent:latest"
   replicas: 1
   servicePort: 8080
-  torrentingPort: 6881  # Default: 6881 - This is the only one I have open in my router!
+  torrentingPort: 6881 # Default: 6881 - This is the only one I have open in my router!
   resources:
     requests:
       cpu: 200m
@@ -32,8 +32,10 @@ service:
     - name: media-storage
       mountPath: /downloads
       subPath: downloads
+  env:
 
 securityContext:
+  runAsNonRoot: true
   runAsUser: 1000
   runAsGroup: 1000
   fsGroup: 1000

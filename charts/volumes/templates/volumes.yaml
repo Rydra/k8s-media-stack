@@ -30,14 +30,7 @@ spec:
   storageClassName: {{ .Values.storage.storageClass }}
   local:
     path: {{ .Values.storage.mediaStoragePath }}
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - samantha
+
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -55,11 +48,3 @@ spec:
   storageClassName: {{ .Values.storage.storageClass }}
   local:
     path: {{ .Values.storage.immichStoragePath }}
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - samantha

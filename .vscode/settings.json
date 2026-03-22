@@ -1,0 +1,42 @@
+{
+  // Asocia archivos .yaml en carpetas de Helm con el lenguaje 'helm'
+  "files.associations": {
+    "**/templates/*.yaml": "helm",
+    "**/templates/*.tpl": "helm",
+    "Chart.yaml": "yaml",
+    "values.yaml": "yaml"
+  },
+
+  // Configuración específica para el lenguaje Helm
+  "[helm]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.autoIndent": "full",
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": true
+    }
+  },
+
+  // Configuración para YAML (Values y Charts)
+  "[yaml]": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.autoIndent": "advanced"
+  },
+
+  // Validación de esquemas de Kubernetes para los archivos de valores
+  "yaml.schemas": {
+    "kubernetes": "**/templates/*.yaml"
+  },
+
+  // Recomendado: Evita que el linter de YAML choque con la sintaxis de Go Templates {{ }}
+  "yaml.format.enable": true,
+  "yaml.validate": true,
+  "vs-kubernetes": {
+    "vs-kubernetes.helm-path": "helm"
+  }
+}

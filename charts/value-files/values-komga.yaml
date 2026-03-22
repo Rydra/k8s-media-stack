@@ -8,8 +8,6 @@ service:
       cpu: 200m
       memory: 512Mi
     limits:
-      cpu: 1
-      memory: 1024Mi
   livenessProbe:
     httpGet:
       path: /komga/actuator/health

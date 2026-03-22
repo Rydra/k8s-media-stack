@@ -37,7 +37,6 @@ destroy-volumes:
 	helm uninstall volumes -n volumes
 
 deploy-all:
-	$(MAKE) deploy chart=shared
 	$(MAKE) deploy-base service=bazarr
 	$(MAKE) deploy-base service=komga
 	$(MAKE) deploy-base service=lidarr
@@ -52,6 +51,11 @@ deploy-all:
 	$(MAKE) deploy chart=paperless-ngx
 	$(MAKE) deploy chart=jellyfin
 	$(MAKE) deploy chart=flaresolverr
+	$(MAKE) deploy chart=vaultwarden
+	$(MAKE) deploy-immich
+	$(MAKE) deploy chart=immich-db
+	$(MAKE) deploy chart=immich-support
+
 
 destroy-all:
 	-$(MAKE) destroy-base service=bazarr
@@ -69,7 +73,10 @@ destroy-all:
 	-$(MAKE) destroy chart=paperless-ngx
 	-$(MAKE) destroy chart=jellyfin
 	-$(MAKE) destroy chart=flaresolverr
-	-$(MAKE) destroy chart=shared
+	-$(MAKE) destroy chart=vaultwarden
+	-$(MAKE) destroy-immich
+	-$(MAKE) destroy chart=immich-db
+	-$(MAKE) destroy chart=immich-support
 
 deploy-immich:
 	# Immich offers a helm chart, so we'll use that alongside our values.yaml
@@ -85,9 +92,9 @@ destroy-immich:
 destroy:
 	helm uninstall $(chart) -n $(namespace)
 
-deploy-cert-manager:
-	# kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
-	$(MAKE) deploy chart=cert-manager
+install-cert-manager-crds:
+	# cert-manager is a dependency of some of our charts, so we'll install it first
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
 
 ### Scaling services
 
@@ -154,8 +161,10 @@ env_vars ?=
 CONSTRUCTED_ARGS = $(foreach item,$(MY_LIST),--arg=$(item))
 
 set-homepage-secrets:
+	kubectl delete secret homepage-secret-env -n $(namespace)
 	kubectl create secret generic homepage-secret-env -n $(namespace) \
 	$(foreach item,$(env_vars),--from-literal $(item))
+
 
 install-gateway-crds:
 	kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
@@ -169,3 +178,8 @@ install-ingress-controller:
 configure-traefik:
 	# In k3s you need to configure traefik
 	helm install traefik traefik/traefik -f charts/traefik/values.yaml --wait
+
+install-reloader:
+	helm repo add stakater https://stakater.github.io/stakater-charts
+	helm repo update
+	helm install reloader stakater/reloader -n default
