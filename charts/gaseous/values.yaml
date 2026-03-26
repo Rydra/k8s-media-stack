@@ -1,0 +1,73 @@
+service:
+  name: gaseous
+  image: "gaseousgames/gaseousserver:latest"
+  replicas: 1
+  servicePort: 80
+  dbServicePort: 3306
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      #cpu: 500m
+      #memory: 512Mi
+  livenessProbe:
+    # httpGet:
+    #   path: /komga/actuator/health
+    #   port: 25600
+    # initialDelaySeconds: 30
+    # periodSeconds: 10
+    # failureThreshold: 1
+  readinessProbe:
+    # httpGet:
+    #   path: /komga/actuator/health
+    #   port: 25600
+    # initialDelaySeconds: 30
+    # periodSeconds: 5
+  httpRoutePath: "/"
+  volumeMounts:
+    - name: media-storage
+      mountPath: /home/gaseous/.gaseous-server
+      subPath: gaseous
+  dbVolumeMounts:
+    - name: config
+      mountPath: /var/lib/mysql
+      subPath: gaseous
+  env:
+    dbhost: "gaseous-db" # The Postgres container will run in the same pod, so we can use localhost to connect to it
+    dbuser: "root" # Should match MARIADB_USER in mariadb
+    TZ: "Europe/Madrid"
+  envSecrets:
+    - name: dbpass
+      secretName: gaseous-secrets
+      key: MARIADB_ROOT_PASSWORD
+    - name: igdbclientid
+      secretName: gaseous-secrets
+      key: IGDB_CLIENT_ID
+    - name: igdbclientsecret
+      secretName: gaseous-secrets
+      key: IGDB_CLIENT_SECRET
+
+  dbEnv:
+    MARIADB_USER: "gaseous"
+  dbEnvSecrets:
+    - name: MARIADB_PASSWORD
+      secretName: gaseous-secrets
+      key: MARIADB_PASSWORD
+    - name: MARIADB_ROOT_PASSWORD
+      secretName: gaseous-secrets
+      key: MARIADB_ROOT_PASSWORD
+securityContext:
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # runAsGroup: 1000
+  # fsGroup: 1000
+
+hostnames:
+  - gaseous.local
+
+storage:
+  configClaimName: config-pvc
+  mediaClaimName: media-pvc
+
+gatewayClassName: traefik

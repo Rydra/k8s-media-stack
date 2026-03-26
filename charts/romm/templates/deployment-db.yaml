@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.service.name }}-db
+  name: {{ .Values.service.name }}-db
+spec:
+  replicas: {{ .Values.service.replicas }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.service.name }}-db
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.service.name }}-db
+    spec:
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.configClaimName }}
+      containers:
+        - name: romm-db
+          image: mariadb:latest
+          livenessProbe:
+            exec:
+              command:
+                - "healthcheck.sh"
+                - "--connect"
+                - "--innodb_initialized"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+            timeoutSeconds: 5
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          volumeMounts:
+            {{- toYaml .Values.service.dbVolumeMounts | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.service.name }}-db-config
+          env:
+            {{- range .Values.service.dbEnvSecrets }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretName }}
+                  key: {{ .key }}
+            {{- end }}

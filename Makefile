@@ -155,14 +155,23 @@ scale-down-paperless:
 scale-up-paperless:
 	kubectl scale deployment paperless-ngx --replicas=1 -n $(namespace)
 
+scale-down-gamevault:
+	$(MAKE) scale-down service=gamevault
+	$(MAKE) scale-down service=gamevault-db
+
 ### Management
 
 env_vars ?=
 CONSTRUCTED_ARGS = $(foreach item,$(MY_LIST),--arg=$(item))
 
 set-homepage-secrets:
-	kubectl delete secret homepage-secret-env -n $(namespace)
+	-kubectl delete secret homepage-secret-env -n $(namespace)
 	kubectl create secret generic homepage-secret-env -n $(namespace) \
+	$(foreach item,$(env_vars),--from-literal $(item))
+
+set-secrets:
+	-kubectl delete secret $(name) -n $(namespace)
+	kubectl create secret generic $(name) -n $(namespace) \
 	$(foreach item,$(env_vars),--from-literal $(item))
 
 
