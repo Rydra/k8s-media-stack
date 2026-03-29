@@ -7,7 +7,7 @@ app:
     - name: torrenting-tcp
       port: 6881
       protocol: TCP
-    - name: torrenting-tcp
+    - name: torrenting-udp
       port: 6881
       protocol: UDP
   httpRoutePath: "/"

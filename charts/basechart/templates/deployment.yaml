@@ -28,6 +28,14 @@ spec:
       containers:
         - image: {{ .Values.image | required "Please provide an image for the service you want to deploy" }}
           name: {{ .Values.name }}
+          {{- if .Values.command }}
+          command:
+            {{- toYaml .Values.command | nindent 12 }}
+          {{- end }}
+          {{- if .Values.commandArgs }}
+          args:
+            {{- toYaml .Values.commandArgs | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.livenessProbe }}

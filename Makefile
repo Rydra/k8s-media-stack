@@ -21,14 +21,7 @@ namespace := media-stack
 deploy:
 	helm upgrade --install $(chart) charts/$(chart) -n $(namespace) --create-namespace
 
-
 service := radarr
-
-deploy-base:
-	helm upgrade --install $(service) charts/basechart -n $(namespace) --create-namespace --values charts/value-files/values-$(service).yaml
-
-destroy-base:
-	helm uninstall $(service) -n $(namespace)
 
 deploy-volumes:
 	helm upgrade --install volumes charts/volumes -n volumes
@@ -36,58 +29,46 @@ deploy-volumes:
 destroy-volumes:
 	helm uninstall volumes -n volumes
 
-deploy-all:
-	$(MAKE) deploy-base service=bazarr
-	$(MAKE) deploy-base service=komga
-	$(MAKE) deploy-base service=lidarr
-	$(MAKE) deploy-base service=mylar3
-	$(MAKE) deploy-base service=prowlarr
-	$(MAKE) deploy-base service=radarr
-	$(MAKE) deploy-base service=sonarr
-	$(MAKE) deploy-base service=readarr
-	$(MAKE) deploy-base service=metube
+deploy-support:
+	$(MAKE) deploy-volumes
+	$(MAKE) install-cert-manager-crds
+	$(MAKE) deploy chart=cert-manager
+	$(MAKE) deploy chart=shared
 
+deploy-all:
+	$(MAKE) deploy chart=bazarr
+	$(MAKE) deploy chart=komga
+	$(MAKE) deploy chart=kapowarr
+	$(MAKE) deploy chart=prowlarr
+	$(MAKE) deploy chart=radarr
+	$(MAKE) deploy chart=sonarr
+	$(MAKE) deploy chart=metube
 	$(MAKE) deploy chart=qbittorrent
 	$(MAKE) deploy chart=paperless-ngx
 	$(MAKE) deploy chart=jellyfin
 	$(MAKE) deploy chart=flaresolverr
 	$(MAKE) deploy chart=vaultwarden
-	$(MAKE) deploy-immich
-	$(MAKE) deploy chart=immich-db
-	$(MAKE) deploy chart=immich-support
-
+	$(MAKE) deploy chart=immich
+	$(MAKE) deploy chart=homepage
+	$(MAKE) deploy chart=romm
 
 destroy-all:
-	-$(MAKE) destroy-base service=bazarr
-	-$(MAKE) destroy-base service=komga
-	-$(MAKE) destroy-base service=lidarr
-	-$(MAKE) destroy-base service=mylar3
-	-$(MAKE) destroy-base service=prowlarr
-	-$(MAKE) destroy-base service=radarr
-	-$(MAKE) destroy-base service=sonarr
-	-$(MAKE) destroy-base service=readarr
-	-$(MAKE) destroy-base service=metube
-
-
+	-$(MAKE) destroy chart=bazarr
+	-$(MAKE) destroy chart=komga
+	-$(MAKE) destroy chart=kapowarr
+	-$(MAKE) destroy chart=prowlarr
+	-$(MAKE) destroy chart=radarr
+	-$(MAKE) destroy chart=sonarr
+	-$(MAKE) destroy chart=metube
 	-$(MAKE) destroy chart=qbittorrent
 	-$(MAKE) destroy chart=paperless-ngx
 	-$(MAKE) destroy chart=jellyfin
 	-$(MAKE) destroy chart=flaresolverr
 	-$(MAKE) destroy chart=vaultwarden
-	-$(MAKE) destroy-immich
-	-$(MAKE) destroy chart=immich-db
-	-$(MAKE) destroy chart=immich-support
+	-$(MAKE) destroy chart=immich
+	-$(MAKE) destroy chart=homepage
+	-$(MAKE) destroy chart=romm
 
-deploy-immich:
-	# Immich offers a helm chart, so we'll use that alongside our values.yaml
-	helm upgrade --install --create-namespace -n $(namespace) immich oci://ghcr.io/immich-app/immich-charts/immich -f charts/value-files/immich.yaml
-	$(MAKE) deploy chart=immich-db
-	$(MAKE) deploy chart=immich-support
-
-destroy-immich:
-	helm uninstall immich -n $(namespace)
-	$(MAKE) deploy chart=immich-db
-	$(MAKE) deploy chart=immich-support
 
 destroy:
 	helm uninstall $(chart) -n $(namespace)

@@ -1,17 +1,7 @@
-service:
+app:
   name: paperless-ngx
   image: "ghcr.io/paperless-ngx/paperless-ngx:latest"
-  replicas: 1
   servicePort: 8000
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 1
-      #memory: 1024Mi
-  livenessProbe:
-  readinessProbe:
   httpRoutePath: "/paperless"
   volumeMounts:
     - name: config
@@ -27,24 +17,72 @@ service:
       mountPath: /usr/src/paperless/consume
       subPath: documents/import
   env:
-    PAPERLESS_REDIS: "redis://localhost:6379"
-    PAPERLESS_DBHOST: "localhost"
+    PAPERLESS_REDIS: "redis://paperless-redis:6379"
+    PAPERLESS_DBHOST: "paperless-db"
     PAPERLESS_TIKA_ENABLED: "1"
-    PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://gotenberg:3000"
-    PAPERLESS_TIKA_ENDPOINT: "http://localhost:9998"
+    PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://paperless-gotenberg:3000"
+    PAPERLESS_TIKA_ENDPOINT: "http://paperless-tika:9998"
     PAPERLESS_CONSUMER_POLLING: "20"
     PAPERLESS_FILENAME_FORMAT: "{title}"
     PAPERLESS_FORCE_SCRIPT_NAME: "/paperless"
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+database:
+  name: paperless-db
+  image: "docker.io/library/postgres:15"
+  servicePort: 5432
+  exposeGateway: false
+  volumeMounts:
+    - name: config
+      mountPath: /var/lib/postgresql/data
+      subPath: paperless-ngx/postgres
+  env:
+    POSTGRES_USER: "paperless"
+    POSTGRES_PASSWORD: "paperless"
+    POSTGRES_DB: "paperless"
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: 0
 
-hostnames: []
+gotenberg:
+  name: paperless-gotenberg
+  image: "docker.io/gotenberg/gotenberg:7.10"
+  command:
+    - gotenberg
+  commandArgs:
+    - "--chromium-disable-javascript=true"
+    - "--chromium-allow-list=file:///tmp/.*"
+  exposeGateway: false
+  servicePort: 3000
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
+tika:
+  name: paperless-tika
+  image: "apache/tika:3.2.3.0-full"
+  exposeGateway: false
+  servicePort: 9998
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
-gatewayClassName: traefik
+redis:
+  name: paperless-redis
+  image: "docker.io/library/redis:7"
+  exposeGateway: false
+  servicePort: 6379
+  volumeMounts:
+    - name: config
+      mountPath: /data
+      subPath: paperless-ngx/redis
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: paperless-ngx
-description: A Helm chart for paperless-ngx
+description: A Helm chart for Paperless NGX
 
 # A chart can be either an 'application' or a 'library' chart. A library chart
 # is a collection of templates that can be re-used in other charts.
@@ -9,3 +9,25 @@ type: application
 version: 0.1.0
 
 appVersion: "0.1.0"
+
+dependencies:
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: app
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: database
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: redis
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: gotenberg
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: tika
