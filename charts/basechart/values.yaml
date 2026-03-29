@@ -1,41 +1,40 @@
-service:
-  name: komga
-  image: "gotson/komga:latest"
-  replicas: 1
-  servicePort: 25600
-  exposeGateway: true
-  exposeService: true
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits: {}
-    #   cpu: 1
-    #   memory: 1024Mi
-  livenessProbe: {}
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 10
-    # failureThreshold: 1
-  readinessProbe: {}
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
-  # e.g. "/komga" - only needed if you want to serve the app on a subpath of your domain (e.g. example.com/komga). If empty, it will be served on the root of the domain (e.g. komga.example.com)
-  httpRoutePath: ""
-  volumeMounts: []
-    # - name: config
-    #   mountPath: /config
-    #   subPath: komga
-    # - name: media
-    #   mountPath: /data
-    #   subPath: media/books
-  env: {}
-  envSecrets: []
+name: ""
+image: ""
+replicas: 1
+servicePort: 25600
+exposeGateway: true
+exposeService: true
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits: {}
+  #   cpu: 1
+  #   memory: 1024Mi
+livenessProbe: {}
+  # httpGet:
+  #   path: /komga/actuator/health
+  #   port: 25600
+  # initialDelaySeconds: 30
+  # periodSeconds: 10
+  # failureThreshold: 1
+readinessProbe: {}
+  # httpGet:
+  #   path: /komga/actuator/health
+  #   port: 25600
+  # initialDelaySeconds: 30
+  # periodSeconds: 5
+# e.g. "/komga" - only needed if you want to serve the app on a subpath of your domain (e.g. example.com/komga). If empty, it will be served on the root of the domain (e.g. komga.example.com)
+httpRoutePath: ""
+volumeMounts: []
+  # - name: config
+  #   mountPath: /config
+  #   subPath: komga
+  # - name: media
+  #   mountPath: /data
+  #   subPath: media/books
+env: {}
+envSecrets: []
 
 securityContext: {}
   # runAsUser: 1000
