@@ -38,5 +38,7 @@
   "yaml.validate": true,
   "vs-kubernetes": {
     "vs-kubernetes.helm-path": "helm"
-  }
+  },
+  "chat.tools.terminal.sandbox.enabled": true,
+  "workbench.browser.enableChatTools": false
 }

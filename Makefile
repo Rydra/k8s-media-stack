@@ -137,6 +137,9 @@ scale-up-all:
 
 ### Immich has high memory usage, so we'll scale it down separately
 
+update-deps:
+	helm dependency update charts/$(chart)
+
 scale-down-immich:
 	kubectl scale deployment immich-server --replicas=0 -n $(namespace)
 	kubectl scale deployment immich-db --replicas=0 -n $(namespace)

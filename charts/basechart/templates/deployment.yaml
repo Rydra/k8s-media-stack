@@ -21,22 +21,30 @@ spec:
         - name: media
           persistentVolumeClaim:
             claimName: {{ .Values.storage.mediaClaimName }}
+      {{- if .Values.securityContext }}
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
+      {{- end }}
       containers:
         - image: {{ .Values.service.image }}
           name: {{ .Values.service.name }}
           resources:
             {{- toYaml .Values.service.resources | nindent 12 }}
+          {{- if .Values.service.livenessProbe }}
           livenessProbe:
             {{- toYaml .Values.service.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.service.readinessProbe }}
           readinessProbe:
             {{- toYaml .Values.service.readinessProbe | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: {{ .Values.service.servicePort }}
               protocol: TCP
+          {{- if .Values.service.volumeMounts }}
           volumeMounts:
             {{- toYaml .Values.service.volumeMounts | nindent 12 }}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.service.name }}-config

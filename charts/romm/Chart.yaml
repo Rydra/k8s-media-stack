@@ -9,3 +9,13 @@ type: application
 version: 0.1.0
 
 appVersion: "0.1.0"
+
+dependencies:
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: http-app
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: database

@@ -3,6 +3,7 @@ service:
   image: "ghcr.io/flaresolverr/flaresolverr:latest"
   replicas: 1
   servicePort: 8191
+  exposeGateway: false
   resources:
     requests:
       cpu: 200m
@@ -12,7 +13,6 @@ service:
       memory: 1024Mi
   livenessProbe:
   readinessProbe:
-  httpRoutePath: "/"
   volumeMounts:
   env:
 
@@ -20,8 +20,6 @@ securityContext:
   runAsUser: 1000
   runAsGroup: 1000
   fsGroup: 1000
-
-hostnames: []
 
 storage:
   configClaimName: config-pvc

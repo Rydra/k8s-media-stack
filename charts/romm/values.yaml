@@ -1,107 +1,106 @@
-service:
-  name: romm
-  image: "rommapp/romm:latest"
-  replicas: 1
-  servicePort: 8080
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 500m
-      #memory: 512Mi
-  livenessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 10
-    # failureThreshold: 1
-  readinessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
-  httpRoutePath: "/"
-  volumeMounts:
-    - name: config
-      mountPath: /romm/config # (Optional) Path where config.yml is stored
-      subPath: romm/
-    - name: config
-      mountPath: /redis-data
-      subPath: romm/redis
+http-app:
+  hostnames:
+    - romm.local
+  service:
+    name: romm
+    image: "rommapp/romm:latest"
+    replicas: 1
+    servicePort: 8080
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+    httpRoutePath: "/"
+    volumeMounts:
+      - name: config
+        mountPath: /romm/config # (Optional) Path where config.yml is stored
+        subPath: romm/
+      - name: config
+        mountPath: /redis-data
+        subPath: romm/redis
+      - name: media
+        mountPath: /romm/library
+        subPath: games/rom-library
+      - name: media
+        mountPath: /romm/assets
+        subPath: romm/assets
+      - name: media
+        mountPath: /romm/resources
+        subPath: romm/resources
+    env:
+      DB_HOST: "romm-db" # The mariaDB container will run in the same pod, so we can use localhost to connect to it
+      DB_NAME: "romm" # Should match MARIADB_DATABASE in mariadb
+      DB_USER: "romm-user" # Should match MARIADB_USER in mariadb
+      HASHEOUS_API_ENABLED: "true" # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#hasheous
+      LAUNCHBOX_API_ENABLED: "true"
+      ENABLE_SCHEDULED_UPDATE_LAUNCHBOX_METADATA: "true"
+      HLTB_API_ENABLED: "true"
+      ROMM_PORT: "8080"
+    envSecrets:
+      - name: DB_PASSWD
+        secretName: romm-secrets
+        key: MARIADB_PASSWORD
+      - name: ROMM_AUTH_SECRET_KEY
+        secretName: romm-secrets
+        key: ROMM_AUTH_SECRET_KEY
+      - name: SCREENSCRAPER_USER
+        secretName: romm-secrets
+        key: SCREENSCRAPER_USER
+      - name: SCREENSCRAPER_PASSWORD # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#screenscraper
+        secretName: romm-secrets
+        key: SCREENSCRAPER_PASSWORD
+      - name: RETROACHIEVEMENTS_API_KEY # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#retroachievements
+        secretName: romm-secrets
+        key: RETROACHIEVEMENTS_API_KEY
+      - name: STEAMGRIDDB_API_KEY # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#steamgriddb
+        secretName: romm-secrets
+        key: STEAMGRIDDB_API_KEY
+      - name: IGDB_CLIENT_SECRET
+        secretName: romm-secrets
+        key: IGDB_CLIENT_SECRET
+      - name: IGDB_CLIENT_ID
+        secretName: romm-secrets
+        key: IGDB_CLIENT_ID
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
-    - name: media-storage
-      mountPath: /romm/library
-      subPath: games/rom-library
-    - name: media-storage
-      mountPath: /romm/assets
-      subPath: romm/assets
-    - name: media-storage
-      mountPath: /romm/resources
-      subPath: romm/resources
-  dbVolumeMounts:
-    - name: config
-      mountPath: /var/lib/mysql
-      subPath: romm-db
-  env:
-    DB_HOST: "romm-db" # The mariaDB container will run in the same pod, so we can use localhost to connect to it
-    DB_NAME: "romm" # Should match MARIADB_DATABASE in mariadb
-    DB_USER: "romm-user" # Should match MARIADB_USER in mariadb
-    HASHEOUS_API_ENABLED: "true" # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#hasheous
-    LAUNCHBOX_API_ENABLED: "true"
-    ENABLE_SCHEDULED_UPDATE_LAUNCHBOX_METADATA: "true"
-    HLTB_API_ENABLED: "true"
-  envSecrets:
-    - name: DB_PASSWD
-      secretName: romm-secrets
-      key: MARIADB_PASSWORD
-    - name: ROMM_AUTH_SECRET_KEY
-      secretName: romm-secrets
-      key: ROMM_AUTH_SECRET_KEY
-    - name: SCREENSCRAPER_USER
-      secretName: romm-secrets
-      key: SCREENSCRAPER_USER
-    - name: SCREENSCRAPER_PASSWORD # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#screenscraper
-      secretName: romm-secrets
-      key: SCREENSCRAPER_PASSWORD
-    - name: RETROACHIEVEMENTS_API_KEY # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#retroachievements
-      secretName: romm-secrets
-      key: RETROACHIEVEMENTS_API_KEY
-    - name: STEAMGRIDDB_API_KEY # https://docs.romm.app/latest/Getting-Started/Metadata-Providers/#steamgriddb
-      secretName: romm-secrets
-      key: STEAMGRIDDB_API_KEY
-    - name: IGDB_CLIENT_SECRET
-      secretName: romm-secrets
-      key: IGDB_CLIENT_SECRET
-    - name: IGDB_CLIENT_ID
-      secretName: romm-secrets
-      key: IGDB_CLIENT_ID
-
-  dbEnv:
-    MARIADB_DATABASE: "romm"
-    MARIADB_USER: "romm-user"
-  dbEnvSecrets:
-    # Binds an env var to a secret name
-    - name: MARIADB_ROOT_PASSWORD
-      secretName: romm-secrets
-      key: MARIADB_ROOT_PASSWORD
-    - name: MARIADB_PASSWORD
-      secretName: romm-secrets
-      key: MARIADB_PASSWORD
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-
-hostnames:
-  - romm.local
-  - romm.tailcffbb.ts.net
-
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
-
-gatewayClassName: traefik
+database:
+  service:
+    name: romm-db
+    image: "mariadb:latest"
+    replicas: 1
+    servicePort: 3306
+    exposeService: true
+    exposeGateway: false
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+    livenessProbe:
+      exec:
+        command:
+          - "healthcheck.sh"
+          - "--connect"
+          - "--innodb_initialized"
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      failureThreshold: 5
+      timeoutSeconds: 5
+    volumeMounts:
+      - name: config
+        mountPath: /var/lib/mysql
+        subPath: romm-db
+    env:
+      MARIADB_DATABASE: "romm"
+      MARIADB_USER: "romm-user"
+    envSecrets:
+      # Binds an env var to a secret name
+      - name: MARIADB_ROOT_PASSWORD
+        secretName: romm-secrets
+        key: MARIADB_ROOT_PASSWORD
+      - name: MARIADB_PASSWORD
+        secretName: romm-secrets
+        key: MARIADB_PASSWORD
