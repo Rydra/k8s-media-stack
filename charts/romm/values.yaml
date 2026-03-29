@@ -34,7 +34,7 @@ service:
 
     - name: media-storage
       mountPath: /romm/library
-      subPath: romm/library
+      subPath: games/rom-library
     - name: media-storage
       mountPath: /romm/assets
       subPath: romm/assets

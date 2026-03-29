@@ -8,7 +8,7 @@ storage classes that map to actual folders of your filesystem.
 ## Getting Started
 
 1. Spin up K3S in your computer
-2. Add the HTTPs certificate secret keys
+2. Add the HTTPs certificate secret keys (this is required by Vaultwarden)
 
 ```bash
 make install-cert-manager-crds

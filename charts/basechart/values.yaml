@@ -33,6 +33,7 @@ service:
       subPath: media/books
   env:
     PROWLARR__HOST__URLBASE: "/komga"
+  envSecrets: []
 
 securityContext:
   runAsUser: 1000
