@@ -1,21 +1,61 @@
-service:
-  name: homepage
-  image: "ghcr.io/gethomepage/homepage:latest"
-  replicas: 1
-  servicePort: 3000
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 1
-      #memory: 1024Mi
-  livenessProbe:
-  readinessProbe:
-  httpRoutePath: "/"
-  volumeMounts:
-  env:
-    HOMEPAGE_ALLOWED_HOSTS: "home.local"
+name: homepage
+image: "ghcr.io/gethomepage/homepage:latest"
+replicas: 1
+servicePort: 3000
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+livenessProbe:
+readinessProbe:
+includeGlobs:
+  - "configs/*"
+
+# This will require to prepopulate env var secrets beforehand. The ones
+# required are:
+# - HOMEPAGE_VAR_KOMGA_USER
+# - HOMEPAGE_VAR_KOMGA_PW
+envSecretName: "homepage-secret-env"
+
+httpRoutePath: "/"
+extraVolumes:
+  - name: homepage-config
+    configMap:
+      name: homepage-config
+  - name: logs
+    emptyDir: {}
+volumeMounts:
+  - mountPath: /app/config/custom.js
+    name: homepage-config
+    subPath: custom.js
+  - mountPath: /app/config/custom.css
+    name: homepage-config
+    subPath: custom.css
+  - mountPath: /app/config/bookmarks.yaml
+    name: homepage-config
+    subPath: bookmarks.yaml
+  - mountPath: /app/config/docker.yaml
+    name: homepage-config
+    subPath: docker.yaml
+  - mountPath: /app/config/kubernetes.yaml
+    name: homepage-config
+    subPath: kubernetes.yaml
+  - mountPath: /app/config/services.yaml
+    name: homepage-config
+    subPath: services.yaml
+  - mountPath: /app/config/settings.yaml
+    name: homepage-config
+    subPath: settings.yaml
+  - mountPath: /app/config/widgets.yaml
+    name: homepage-config
+    subPath: widgets.yaml
+  - mountPath: /app/config/logs
+    name: logs
+env:
+  HOMEPAGE_ALLOWED_HOSTS: "home.local"
+
+annotations:
+  reloader.stakater.com/auto: "true"
 
 securityContext:
   runAsUser: 1000

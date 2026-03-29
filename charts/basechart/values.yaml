@@ -3,10 +3,22 @@ image: ""
 replicas: 1
 servicePort: 25600
 
+annotations: {}
+
 hostPorts: []
   #- name: "amule-tcp"
   #  port: 4662
   #  protocol: TCP
+
+includeGlobs: []
+  # - "configs/*"
+
+# Optional name of a Kubernetes Secret containing environment variables to be
+# injected into the container. The Secret should be in the same
+# namespace as the Deployment and should have key-value pairs where
+# the key is the name of the environment variable and the value is the
+# value of the environment variable.
+envSecretName: ""
 
 exposeGateway: true
 exposeService: true
@@ -32,6 +44,14 @@ readinessProbe: {}
   # periodSeconds: 5
 # e.g. "/komga" - only needed if you want to serve the app on a subpath of your domain (e.g. example.com/komga). If empty, it will be served on the root of the domain (e.g. komga.example.com)
 httpRoutePath: ""
+
+extraVolumes: []
+  # - name: homepage-config
+  #   configMap:
+  #     name: homepage-config
+  # - name: logs
+  #   emptyDir: {}
+
 volumeMounts: []
   # - name: config
   #   mountPath: /config

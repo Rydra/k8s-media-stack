@@ -5,7 +5,9 @@ metadata:
   labels:
     app.kubernetes.io/name: homepage
   annotations:
-    reloader.stakater.com/auto: "true"
+    {{- if .Values.annotations }}
+    {{- toYaml .Values.annotations | nindent 4 }}
+    {{- end }}
 
 spec:
   revisionHistoryLimit: 3
@@ -20,7 +22,7 @@ spec:
       labels:
         app.kubernetes.io/name: homepage
     spec:
-      serviceAccountName: homepage
+      serviceAccountName: homepage-sa
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
@@ -30,7 +32,7 @@ spec:
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
-                name: {{ .Values.service.name }}-config
+                name: {{ .Values.name }}-config
             # This will require to prepopulate env var secrets beforehand. The ones
             # required are:
             # - HOMEPAGE_VAR_KOMGA_USER
@@ -43,34 +45,36 @@ spec:
               protocol: TCP
           volumeMounts:
             - mountPath: /app/config/custom.js
-              name: homepage-config
+              name: homepage-files
               subPath: custom.js
             - mountPath: /app/config/custom.css
-              name: homepage-config
+              name: homepage-files
               subPath: custom.css
             - mountPath: /app/config/bookmarks.yaml
-              name: homepage-config
+              name: homepage-files
               subPath: bookmarks.yaml
             - mountPath: /app/config/docker.yaml
-              name: homepage-config
+              name: homepage-files
               subPath: docker.yaml
             - mountPath: /app/config/kubernetes.yaml
-              name: homepage-config
+              name: homepage-files
               subPath: kubernetes.yaml
             - mountPath: /app/config/services.yaml
-              name: homepage-config
+              name: homepage-files
               subPath: services.yaml
             - mountPath: /app/config/settings.yaml
-              name: homepage-config
+              name: homepage-files
               subPath: settings.yaml
             - mountPath: /app/config/widgets.yaml
-              name: homepage-config
+              name: homepage-files
               subPath: widgets.yaml
             - mountPath: /app/config/logs
               name: logs
       volumes:
-        - name: homepage-config
+        {{- if .Values.includeGlobs }}
+        - name: {{ .Values.name }}-files
           configMap:
-            name: homepage
+            name: {{ .Values.name }}-files
+        {{- end }}
         - name: logs
           emptyDir: {}

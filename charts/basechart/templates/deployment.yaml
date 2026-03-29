@@ -4,6 +4,10 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.name | required "Please provide a name for the service you want to deploy" }}
   name: {{ .Values.name }}
+  annotations:
+    {{- if .Values.annotations }}
+    {{- toYaml .Values.annotations | nindent 4 }}
+    {{- end }}
 spec:
   replicas: {{ .Values.replicas }}
   selector:
@@ -21,6 +25,14 @@ spec:
         - name: media
           persistentVolumeClaim:
             claimName: {{ .Values.storage.mediaClaimName }}
+        {{- if .Values.includeGlobs }}
+        - name: {{ .Values.name }}-files
+          configMap:
+            name: {{ .Values.name }}-files
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+          {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end }}
       {{- if .Values.securityContext }}
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
@@ -62,6 +74,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}-config
+            {{- if .Values.envSecretName }}
+            - secretRef:
+                name: {{ .Values.envSecretName }}
+            {{- end }}
           env:
             {{- range .Values.envSecrets }}
             - name: {{ .name }}
