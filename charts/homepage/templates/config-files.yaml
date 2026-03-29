@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.name }}-files
+  name: {{ .Values.app.name }}-files
   labels:
-    app.kubernetes.io/name: {{ .Values.name }}
+    app.kubernetes.io/name: {{ .Values.app.name }}
 data:
 {{- range .Values.includeGlobs }}
 {{ ($.Files.Glob .).AsConfig | indent 2 }}

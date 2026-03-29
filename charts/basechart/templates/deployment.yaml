@@ -18,6 +18,9 @@ spec:
       labels:
         app.kubernetes.io/name: {{ .Values.name }}
     spec:
+      {{- if .Values.podOptions -}}
+      {{- toYaml .Values.podOptions | nindent 6 }}
+      {{- end }}
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -25,11 +28,6 @@ spec:
         - name: media
           persistentVolumeClaim:
             claimName: {{ .Values.storage.mediaClaimName }}
-        {{- if .Values.includeGlobs }}
-        - name: {{ .Values.name }}-files
-          configMap:
-            name: {{ .Values.name }}-files
-        {{- end }}
         {{- if .Values.extraVolumes }}
           {{- toYaml .Values.extraVolumes | nindent 8 }}
         {{- end }}

@@ -10,8 +10,7 @@ hostPorts: []
   #  port: 4662
   #  protocol: TCP
 
-includeGlobs: []
-  # - "configs/*"
+podOptions: {}
 
 # Optional name of a Kubernetes Secret containing environment variables to be
 # injected into the container. The Secret should be in the same

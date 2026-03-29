@@ -1,72 +1,63 @@
-name: homepage
-image: "ghcr.io/gethomepage/homepage:latest"
-replicas: 1
-servicePort: 3000
-resources:
-  requests:
-    cpu: 200m
-    memory: 512Mi
-livenessProbe:
-readinessProbe:
 includeGlobs:
   - "configs/*"
 
-# This will require to prepopulate env var secrets beforehand. The ones
-# required are:
-# - HOMEPAGE_VAR_KOMGA_USER
-# - HOMEPAGE_VAR_KOMGA_PW
-envSecretName: "homepage-secret-env"
+app:
+  name: homepage
+  image: "ghcr.io/gethomepage/homepage:latest"
+  replicas: 1
+  servicePort: 3000
 
-httpRoutePath: "/"
-extraVolumes:
-  - name: homepage-config
-    configMap:
-      name: homepage-config
-  - name: logs
-    emptyDir: {}
-volumeMounts:
-  - mountPath: /app/config/custom.js
-    name: homepage-config
-    subPath: custom.js
-  - mountPath: /app/config/custom.css
-    name: homepage-config
-    subPath: custom.css
-  - mountPath: /app/config/bookmarks.yaml
-    name: homepage-config
-    subPath: bookmarks.yaml
-  - mountPath: /app/config/docker.yaml
-    name: homepage-config
-    subPath: docker.yaml
-  - mountPath: /app/config/kubernetes.yaml
-    name: homepage-config
-    subPath: kubernetes.yaml
-  - mountPath: /app/config/services.yaml
-    name: homepage-config
-    subPath: services.yaml
-  - mountPath: /app/config/settings.yaml
-    name: homepage-config
-    subPath: settings.yaml
-  - mountPath: /app/config/widgets.yaml
-    name: homepage-config
-    subPath: widgets.yaml
-  - mountPath: /app/config/logs
-    name: logs
-env:
-  HOMEPAGE_ALLOWED_HOSTS: "home.local"
+  podOptions:
+    serviceAccountName: homepage-sa
+    automountServiceAccountToken: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
 
-annotations:
-  reloader.stakater.com/auto: "true"
+  # This will require to prepopulate env var secrets beforehand. The ones
+  # required are:
+  # - HOMEPAGE_VAR_KOMGA_USER
+  # - HOMEPAGE_VAR_KOMGA_PW
+  envSecretName: "homepage-secret-env"
 
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  httpRoutePath: "/"
+  extraVolumes:
+    - name: homepage-files
+      configMap:
+        name: homepage-files
+    - name: logs
+      emptyDir: {}
+  volumeMounts:
+    - mountPath: /app/config/custom.js
+      name: homepage-files
+      subPath: custom.js
+    - mountPath: /app/config/custom.css
+      name: homepage-files
+      subPath: custom.css
+    - mountPath: /app/config/bookmarks.yaml
+      name: homepage-files
+      subPath: bookmarks.yaml
+    - mountPath: /app/config/docker.yaml
+      name: homepage-files
+      subPath: docker.yaml
+    - mountPath: /app/config/kubernetes.yaml
+      name: homepage-files
+      subPath: kubernetes.yaml
+    - mountPath: /app/config/services.yaml
+      name: homepage-files
+      subPath: services.yaml
+    - mountPath: /app/config/settings.yaml
+      name: homepage-files
+      subPath: settings.yaml
+    - mountPath: /app/config/widgets.yaml
+      name: homepage-files
+      subPath: widgets.yaml
+    - mountPath: /app/config/logs
+      name: logs
+  env:
+    HOMEPAGE_ALLOWED_HOSTS: "home.local"
 
-hostnames:
-  - home.local
+  annotations:
+    reloader.stakater.com/auto: "true"
 
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
-
-gatewayClassName: traefik
+  hostnames:
+    - home.local

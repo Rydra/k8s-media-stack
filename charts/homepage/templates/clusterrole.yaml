@@ -59,7 +59,7 @@ roleRef:
   name: homepage-cr
 subjects:
   - kind: ServiceAccount
-    name: homepage
+    name: homepage-sa
     namespace: {{ .Release.Namespace }}
 ---
 apiVersion: v1
