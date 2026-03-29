@@ -21,7 +21,8 @@ service:
 
 securityContext:
 
-hostnames: ["vault.local"]
+hostnames:
+  - "vault.local"
 
 storage:
   configClaimName: config-pvc

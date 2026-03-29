@@ -1,6 +1,6 @@
 apiVersion: v2
-name: flaresolverr
-description: A Helm chart for FlareSolverr
+name: romm
+description: A Helm chart for RomM
 
 # A chart can be either an 'application' or a 'library' chart. A library chart
 # is a collection of templates that can be re-used in other charts.
@@ -11,7 +11,11 @@ version: 0.1.0
 appVersion: "0.1.0"
 
 dependencies:
+  - name: immich
+    repository: "oci://ghcr.io/immich-app/immich-charts"
+    version: "*"
+    alias: "app"
   - name: basechart
     version: "0.1.0"
     repository: "file://../basechart"
-    alias: app
+    alias: database

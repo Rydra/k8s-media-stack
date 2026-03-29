@@ -1,4 +1,4 @@
-service:
+app:
   name: flaresolverr
   image: "ghcr.io/flaresolverr/flaresolverr:latest"
   replicas: 1
@@ -11,18 +11,14 @@ service:
     limits:
       cpu: 1
       memory: 1024Mi
-  livenessProbe:
-  readinessProbe:
-  volumeMounts:
-  env:
 
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
+  storage:
+    configClaimName: config-pvc
+    mediaClaimName: media-pvc
 
-gatewayClassName: traefik
+  gatewayClassName: traefik

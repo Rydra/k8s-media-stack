@@ -1,0 +1,9 @@
+dependencies:
+- name: immich
+  repository: oci://ghcr.io/immich-app/immich-charts
+  version: 0.11.0
+- name: basechart
+  repository: file://../basechart
+  version: 0.1.0
+digest: sha256:f1933b3b2ba8ce8d5c69b6f3a42444cb53aea40594a752afc11dece403eee2fe
+generated: "2026-03-29T18:28:02.028184349+02:00"
