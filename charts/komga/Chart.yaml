@@ -1,6 +1,6 @@
 apiVersion: v2
-name: amule
-description: A Helm chart for aMule
+name: komga
+description: A Helm chart for Komga
 
 # A chart can be either an 'application' or a 'library' chart. A library chart
 # is a collection of templates that can be re-used in other charts.

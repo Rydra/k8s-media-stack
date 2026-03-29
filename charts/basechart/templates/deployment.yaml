@@ -41,6 +41,12 @@ spec:
           ports:
             - containerPort: {{ .Values.servicePort }}
               protocol: TCP
+            {{- range .Values.hostPorts }}
+            - containerPort: {{ .port }}
+              protocol: {{ .protocol | default "TCP" }}
+              name: {{ .name }}
+              hostPort: {{ .port }}
+            {{- end }}
           {{- if .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}

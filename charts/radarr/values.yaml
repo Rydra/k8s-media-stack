@@ -1,0 +1,20 @@
+app:
+  name: radarr
+  image: "lscr.io/linuxserver/radarr:latest"
+  replicas: 1
+  servicePort: 7878
+  httpRoutePath: "/radarr"
+  volumeMounts:
+    - name: config
+      mountPath: /config
+      subPath: radarr
+    - name: media
+      mountPath: /downloads
+      subPath: downloads
+    - name: media
+      mountPath: /media/movies
+      subPath: media/movies
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000

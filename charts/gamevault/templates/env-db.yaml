@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Values.service.name }}-db-config
-data:
-  {{ if .Values.service.dbEnv }}
-  {{- toYaml .Values.service.dbEnv | nindent 2 }}
-  {{- end }}

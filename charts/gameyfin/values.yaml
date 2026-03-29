@@ -1,0 +1,35 @@
+app:
+  name: gameyfin
+  image: "ghcr.io/gameyfin/gameyfin:2"
+  replicas: 1
+  servicePort: 8080
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+  httpRoutePath: "/"
+  volumeMounts:
+    - name: config
+      mountPath: /opt/gameyfin/db
+      subPath: gameyfin/db
+    - name: config
+      mountPath: /opt/gameyfin/data
+      subPath: gameyfin/data
+    - name: config
+      mountPath: /opt/gameyfin/plugindata
+      subPath: gameyfin/plugindata
+    - name: config
+      mountPath: /opt/gameyfin/logs
+      subPath: gameyfin/logs
+    - name: media
+      mountPath: /romlibrary
+      subPath: games/rom-library
+  env:
+    PUID: "1000"
+    PGID: "1000"
+  envSecrets:
+    - name: APP_KEY
+      secretName: gameyfin-secrets
+      key: APP_KEY
+  hostnames:
+    - gameyfin.local

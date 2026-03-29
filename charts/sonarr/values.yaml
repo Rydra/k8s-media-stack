@@ -1,0 +1,20 @@
+app:
+  name: sonarr
+  image: "linuxserver/sonarr:latest"
+  replicas: 1
+  servicePort: 8989
+  httpRoutePath: "/sonarr"
+  volumeMounts:
+    - name: config
+      mountPath: /config
+      subPath: sonarr
+    - name: media
+      mountPath: /downloads
+      subPath: downloads
+    - name: media
+      mountPath: /media/tvshows
+      subPath: media/tvshows
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000

@@ -1,0 +1,14 @@
+app:
+  name: prowlarr
+  image: "linuxserver/prowlarr:latest"
+  replicas: 1
+  servicePort: 9696
+  httpRoutePath: "/prowlarr"
+  volumeMounts:
+    - name: config
+      mountPath: /config
+      subPath: prowlarr
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000

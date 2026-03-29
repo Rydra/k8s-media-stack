@@ -1,5 +1,5 @@
 apiVersion: v2
-name: romm
+name: immich
 description: A Helm chart for RomM
 
 # A chart can be either an 'application' or a 'library' chart. A library chart

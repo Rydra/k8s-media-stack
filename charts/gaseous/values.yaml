@@ -1,38 +1,16 @@
-service:
+app:
   name: gaseous
   image: "gaseousgames/gaseousserver:latest"
   replicas: 1
   servicePort: 80
-  dbServicePort: 3306
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 500m
-      #memory: 512Mi
-  livenessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 10
-    # failureThreshold: 1
-  readinessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
   httpRoutePath: "/"
   volumeMounts:
-    - name: media-storage
+    - name: media
       mountPath: /home/gaseous/.gaseous-server
       subPath: gaseous
-  dbVolumeMounts:
-    - name: config
-      mountPath: /var/lib/mysql
-      subPath: gaseous
+    - name: media
+      mountPath: /app/romlibrary
+      subPath: games/rom-library
   env:
     dbhost: "gaseous-db" # The Postgres container will run in the same pod, so we can use localhost to connect to it
     dbuser: "root" # Should match MARIADB_USER in mariadb
@@ -47,27 +25,35 @@ service:
     - name: igdbclientsecret
       secretName: gaseous-secrets
       key: IGDB_CLIENT_SECRET
+  hostnames:
+    - gaseous.local
 
-  dbEnv:
+database:
+  name: gaseous-db
+  image: "mariadb:latest"
+  replicas: 1
+  exposeGateway: false
+  servicePort: 3306
+  livenessProbe:
+    exec:
+      command:
+        - "healthcheck.sh"
+        - "--connect"
+        - "--innodb_initialized"
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 5
+    timeoutSeconds: 5
+  volumeMounts:
+    - name: config
+      mountPath: /var/lib/mysql
+      subPath: gaseous
+  env:
     MARIADB_USER: "gaseous"
-  dbEnvSecrets:
+  envSecrets:
     - name: MARIADB_PASSWORD
       secretName: gaseous-secrets
       key: MARIADB_PASSWORD
     - name: MARIADB_ROOT_PASSWORD
       secretName: gaseous-secrets
       key: MARIADB_ROOT_PASSWORD
-securityContext:
-  # runAsNonRoot: true
-  # runAsUser: 1000
-  # runAsGroup: 1000
-  # fsGroup: 1000
-
-hostnames:
-  - gaseous.local
-
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
-
-gatewayClassName: traefik

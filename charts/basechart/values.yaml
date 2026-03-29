@@ -2,6 +2,12 @@ name: ""
 image: ""
 replicas: 1
 servicePort: 25600
+
+hostPorts: []
+  #- name: "amule-tcp"
+  #  port: 4662
+  #  protocol: TCP
+
 exposeGateway: true
 exposeService: true
 resources:
@@ -35,6 +41,9 @@ volumeMounts: []
   #   subPath: media/books
 env: {}
 envSecrets: []
+  # - name: ENV_VAR_NAME
+  #   secretName: secret-name
+  #   key: secret-key
 
 securityContext: {}
   # runAsUser: 1000
@@ -47,4 +56,5 @@ storage:
   configClaimName: config-pvc
   mediaClaimName: media-pvc
 
+secureGateway: false
 gatewayClassName: traefik

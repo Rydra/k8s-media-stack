@@ -1,0 +1,19 @@
+app:
+  name: mylar3
+  image: "lscr.io/linuxserver/mylar3:latest"
+  replicas: 1
+  servicePort: 8090
+  httpRoutePath: "/mylar3"
+  volumeMounts:
+    - name: config
+      mountPath: /config
+      subPath: mylar3
+    - name: media
+      mountPath: /downloads
+      subPath: downloads
+    - name: media
+      mountPath: /data/comics
+      subPath: media/books/comics
+  env:
+    PUID: "1000"
+    PGID: "1000"

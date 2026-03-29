@@ -1,40 +1,16 @@
-service:
+app:
   name: gamevault
   image: "phalcode/gamevault-backend:latest"
   replicas: 1
   servicePort: 8080
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 500m
-      #memory: 512Mi
-  livenessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 10
-    # failureThreshold: 1
-  readinessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
   httpRoutePath: "/"
   volumeMounts:
-    - name: media-storage
+    - name: media
       mountPath: /files
       subPath: games
-    - name: media-storage
+    - name: media
       mountPath: /media
       subPath: gamevault/media
-  dbVolumeMounts:
-    - name: config
-      mountPath: /var/lib/postgresql/data
-      subPath: gamevault
   env:
     DB_HOST: "gamevault-db" # The Postgres container will run in the same pod, so we can use localhost to connect to it
     DB_USERNAME: "gamevault" # Should match MARIADB_USER in mariadb
@@ -49,25 +25,28 @@ service:
     - name: METADATA_IGDB_CLIENT_SECRET
       secretName: gamevault-secrets
       key: IGDB_CLIENT_SECRET
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  hostnames:
+    - gamevault.local
 
-  dbEnv:
+database:
+  name: gamevault-db
+  image: "postgres:17"
+  replicas: 1
+  servicePort: 5432
+  exposeGateway: false
+  volumeMounts:
+    - name: config
+      mountPath: /var/lib/postgresql/data
+      subPath: gamevault
+  env:
     POSTGRES_USER: gamevault
     POSTGRES_DB: gamevault
-  dbEnvSecrets:
+  envSecrets:
     - name: POSTGRES_PASSWORD
       secretName: gamevault-secrets
       key: POSTGRES_PASSWORD
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-
-hostnames:
-  - gamevault.local
-
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
-
-gatewayClassName: traefik

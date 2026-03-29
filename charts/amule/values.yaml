@@ -1,40 +1,31 @@
-service:
+app:
   name: amule
   image: "ngosang/amule:latest"
   replicas: 1
   servicePort: 4711
-  amuleTCPPort: 4662
-  amuleUDPPort: 4665
-  extendedUDPPort: 4672
+  hostPorts:
+    - name: amule-tcp
+      port: 4662
+      protocol: TCP
+    - name: amule-udp
+      port: 4665
+      protocol: UDP
+    - name: extended-udp
+      port: 4672
+      protocol: UDP
   resources:
     requests:
       cpu: 200m
       memory: 512Mi
-    limits:
-      #cpu: 500m
-      #memory: 512Mi
-  livenessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 10
-    # failureThreshold: 1
-  readinessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
   httpRoutePath: "/"
   volumeMounts:
     - name: config
       mountPath: /home/amule/.aMule
       subPath: amule
-    - name: media-storage
+    - name: media
       mountPath: /incoming
       subPath: downloads/amule
-    - name: media-storage
+    - name: media
       mountPath: /temp
       subPath: downloads/amule/temp
   env:
@@ -49,15 +40,5 @@ service:
     TZ: "Europe/Madrid"
     PUID: "1000"
     PGID: "1000"
-
-securityContext:
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-hostnames:
-
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
-
-gatewayClassName: traefik
+  hostnames:
+    - amule.local

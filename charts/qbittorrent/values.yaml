@@ -1,52 +1,30 @@
-service:
+app:
   name: qbittorrent
   image: "linuxserver/qbittorrent:latest"
   replicas: 1
   servicePort: 8080
-  torrentingPort: 6881 # Default: 6881 - This is the only one I have open in my router!
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 500m
-      #memory: 512Mi
-  livenessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 10
-    # failureThreshold: 1
-  readinessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
+  hostPorts:
+    - name: torrenting-tcp
+      port: 6881
+      protocol: TCP
+    - name: torrenting-tcp
+      port: 6881
+      protocol: UDP
   httpRoutePath: "/"
   volumeMounts:
     - name: config
       mountPath: /config
       subPath: qbittorrent
-    - name: media-storage
+    - name: media
       mountPath: /downloads
       subPath: downloads
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
   env:
-
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-
-hostnames:
-  # QBittorrent is a PITA to set up with subpaths since it doesn't support
-  # URL base paths, so we'll just give it its own hostname and route to it
-  - qbit.local
-
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
-
-gatewayClassName: traefik
+    TORRENTING_PORT: "6881"
+    WEBUI_PORT: "8080"
+  hostnames:
+    - qbit.local

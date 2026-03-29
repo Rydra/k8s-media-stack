@@ -1,0 +1,22 @@
+app:
+  name: readarr
+  image: "linuxserver/readarr:0.4.19-nightly"
+  replicas: 1
+  servicePort: 8787
+  livenessProbe:
+  readinessProbe:
+  httpRoutePath: "/readarr"
+  volumeMounts:
+    - name: config
+      mountPath: /config
+      subPath: readarr
+    - name: media
+      mountPath: /downloads
+      subPath: downloads
+    - name: media
+      mountPath: /media/books
+      subPath: media/books
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000

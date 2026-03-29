@@ -1,0 +1,22 @@
+app:
+  name: metube
+  image: "ghcr.io/alexta69/metube"
+  replicas: 1
+  servicePort: 8081
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+  livenessProbe:
+  readinessProbe:
+  httpRoutePath: "/metube"
+  volumeMounts:
+    - name: media
+      mountPath: /downloads
+      subPath: media/youtube
+  env:
+    URL_PREFIX: "/metube"
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000

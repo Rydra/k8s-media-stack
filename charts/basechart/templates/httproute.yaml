@@ -7,6 +7,9 @@ spec:
   parentRefs:
     - name: traefik-gateway
       namespace: kube-system
+      {{- if .Values.secureGateway }}
+      sectionName: websecure
+      {{- end }}
   # NOTE: If no hostnames are given, this will match them all. For a local
   # setup it's perfect.
   hostnames:
