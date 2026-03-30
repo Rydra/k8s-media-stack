@@ -3,22 +3,9 @@ app:
   image: "ghcr.io/flaresolverr/flaresolverr:latest"
   replicas: 1
   servicePort: 8191
-  exposeGateway: false
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      cpu: 1
-      memory: 1024Mi
-
+  gateway:
+    enabled: false
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
-
-  storage:
-    configClaimName: config-pvc
-    mediaClaimName: media-pvc
-
-  gatewayClassName: traefik

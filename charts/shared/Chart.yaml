@@ -1,6 +1,6 @@
 apiVersion: v2
 name: shared
-description: Shared chart for my entire media stack
+description: Shared Kubernetes resources and configuration for media-stack deployment
 
 # A chart can be either an 'application' or a 'library' chart. A library chart
 # is a collection of templates that can be re-used in other charts.
@@ -8,4 +8,4 @@ type: application
 
 version: 0.1.0
 
-appVersion: "0.1.0"
+appVersion: "1.0.0"

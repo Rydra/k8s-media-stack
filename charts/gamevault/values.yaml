@@ -3,7 +3,11 @@ app:
   image: "phalcode/gamevault-backend:latest"
   replicas: 1
   servicePort: 8080
-  httpRoutePath: "/"
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - gamevault.local
   volumeMounts:
     - name: media
       mountPath: /files
@@ -30,15 +34,14 @@ app:
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
-  hostnames:
-    - gamevault.local
 
 database:
   name: gamevault-db
   image: "postgres:17"
   replicas: 1
   servicePort: 5432
-  exposeGateway: false
+  gateway:
+    enabled: false
   volumeMounts:
     - name: config
       mountPath: /var/lib/postgresql/data

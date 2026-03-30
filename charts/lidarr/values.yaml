@@ -3,7 +3,9 @@ app:
   image: "lscr.io/linuxserver/lidarr:latest"
   replicas: 1
   servicePort: 8686
-  httpRoutePath: "/lidarr"
+  gateway:
+    enabled: true
+    httpRoutePath: "/lidarr"
   volumeMounts:
     - name: config
       mountPath: /config

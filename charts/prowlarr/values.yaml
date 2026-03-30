@@ -3,7 +3,10 @@ app:
   image: "linuxserver/prowlarr:latest"
   replicas: 1
   servicePort: 9696
-  httpRoutePath: "/prowlarr"
+  gateway:
+    enabled: true
+    httpRoutePath: "/prowlarr"
+  exposeService: true
   volumeMounts:
     - name: config
       mountPath: /config

@@ -6,6 +6,11 @@ app:
   image: "ghcr.io/gethomepage/homepage:latest"
   replicas: 1
   servicePort: 3000
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - home.local
 
   podOptions:
     serviceAccountName: homepage-sa
@@ -19,7 +24,6 @@ app:
   # - HOMEPAGE_VAR_KOMGA_PW
   envSecretName: "homepage-secret-env"
 
-  httpRoutePath: "/"
   extraVolumes:
     - name: homepage-files
       configMap:
@@ -58,6 +62,3 @@ app:
 
   annotations:
     reloader.stakater.com/auto: "true"
-
-  hostnames:
-    - home.local

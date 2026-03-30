@@ -3,7 +3,9 @@ app:
   image: "lscr.io/linuxserver/mylar3:latest"
   replicas: 1
   servicePort: 8090
-  httpRoutePath: "/mylar3"
+  gateway:
+    enabled: true
+    httpRoutePath: "/mylar3"
   volumeMounts:
     - name: config
       mountPath: /config

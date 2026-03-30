@@ -6,8 +6,6 @@ service:
 hostnames:
   - immich.local
 
-gatewayClassName: traefik
-
 app:
   ## This chart relies on the common library chart from bjw-s
   ## You can find it at https://github.com/bjw-s-labs/helm-charts/tree/common-4.3.0/charts/library/common

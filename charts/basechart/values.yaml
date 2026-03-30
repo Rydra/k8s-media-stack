@@ -19,7 +19,15 @@ podOptions: {}
 # value of the environment variable.
 envSecretName: ""
 
-exposeGateway: true
+gateway:
+  enabled: true
+  secure: false
+  hostnames: []
+  # e.g. "/komga" - only needed if you want to serve the app on
+  # a subpath of your domain (e.g. example.com/komga). If empty,
+  # it will be served on the root of the domain (e.g. komga.example.com)
+  httpRoutePath: ""
+
 exposeService: true
 resources:
   requests:
@@ -41,8 +49,6 @@ readinessProbe: {}
   #   port: 25600
   # initialDelaySeconds: 30
   # periodSeconds: 5
-# e.g. "/komga" - only needed if you want to serve the app on a subpath of your domain (e.g. example.com/komga). If empty, it will be served on the root of the domain (e.g. komga.example.com)
-httpRoutePath: ""
 
 extraVolumes: []
   # - name: homepage-config
@@ -69,11 +75,6 @@ securityContext: {}
   # runAsGroup: 1000
   # fsGroup: 1000
 
-hostnames: []
-
 storage:
   configClaimName: config-pvc
   mediaClaimName: media-pvc
-
-secureGateway: false
-gatewayClassName: traefik

@@ -3,7 +3,10 @@ app:
   image: "lscr.io/linuxserver/radarr:latest"
   replicas: 1
   servicePort: 7878
-  httpRoutePath: "/radarr"
+  gateway:
+    enabled: true
+    httpRoutePath: "/radarr"
+  exposeService: true
   volumeMounts:
     - name: config
       mountPath: /config

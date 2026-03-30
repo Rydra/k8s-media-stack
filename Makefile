@@ -121,6 +121,34 @@ scale-up-all:
 update-deps:
 	helm dependency update charts/$(chart)
 
+update-deps-all:
+	$(MAKE) update-deps chart=bazarr
+	$(MAKE) update-deps chart=komga
+	$(MAKE) update-deps chart=kapowarr
+	$(MAKE) update-deps chart=prowlarr
+	$(MAKE) update-deps chart=radarr
+	$(MAKE) update-deps chart=sonarr
+	$(MAKE) update-deps chart=metube
+	$(MAKE) update-deps chart=qbittorrent
+	$(MAKE) update-deps chart=paperless-ngx
+	$(MAKE) update-deps chart=jellyfin
+	$(MAKE) update-deps chart=flaresolverr
+	$(MAKE) update-deps chart=vaultwarden
+	$(MAKE) update-deps chart=immich
+	$(MAKE) update-deps chart=homepage
+	$(MAKE) update-deps chart=romm
+
+	# Other deps
+	$(MAKE) update-deps chart=amule
+	$(MAKE) update-deps chart=sabnzbd
+	$(MAKE) update-deps chart=retrom
+	$(MAKE) update-deps chart=readarr
+	$(MAKE) update-deps chart=lidarr
+	$(MAKE) update-deps chart=mylar3
+	$(MAKE) update-deps chart=gaseous
+	$(MAKE) update-deps chart=gameyfin
+	$(MAKE) update-deps chart=gamevault
+
 scale-down-immich:
 	kubectl scale deployment immich-server --replicas=0 -n $(namespace)
 	kubectl scale deployment immich-db --replicas=0 -n $(namespace)

@@ -3,7 +3,12 @@ app:
   image: "ghcr.io/jmberesford/retrom-service:latest"
   replicas: 1
   servicePort: 5101
-  httpRoutePath: "/"
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - retrom.local
+  exposeService: true
   volumeMounts:
     - name: config
       mountPath: /app/config/
@@ -14,5 +19,3 @@ app:
     - name: media
       mountPath: /app/romlibrary
       subPath: games/rom-library
-  hostnames:
-    - retrom.local

@@ -3,11 +3,14 @@ app:
   image: "vaultwarden/server:latest"
   replicas: 1
   servicePort: 80
-  httpRoutePath: "/"
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    secure: true
+    hostnames:
+      - "vault.local"
+  exposeService: true
   volumeMounts:
     - name: config
       mountPath: /data
       subPath: vaultwarden
-  hostnames:
-    - "vault.local"
-  secureGateway: true

@@ -1,13 +1,10 @@
 app:
   name: jellyfin
   image: "jellyfin/jellyfin:latest"
-  replicas: 1
   servicePort: 8096
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-  httpRoutePath: "/jellyfin"
+  gateway:
+    enabled: true
+    httpRoutePath: "/jellyfin"
   volumeMounts:
     - name: config
       mountPath: /config
@@ -15,7 +12,6 @@ app:
     - name: media
       mountPath: /data
       subPath: media
-
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000

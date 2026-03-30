@@ -3,7 +3,18 @@ app:
   image: "gaseousgames/gaseousserver:latest"
   replicas: 1
   servicePort: 80
-  httpRoutePath: "/"
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - gaseous.local
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
   volumeMounts:
     - name: media
       mountPath: /home/gaseous/.gaseous-server
@@ -25,15 +36,21 @@ app:
     - name: igdbclientsecret
       secretName: gaseous-secrets
       key: IGDB_CLIENT_SECRET
-  hostnames:
-    - gaseous.local
 
 database:
   name: gaseous-db
   image: "mariadb:latest"
   replicas: 1
-  exposeGateway: false
+  gateway:
+    enabled: false
   servicePort: 3306
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
   livenessProbe:
     exec:
       command:

@@ -3,6 +3,11 @@ app:
   image: "linuxserver/qbittorrent:latest"
   replicas: 1
   servicePort: 8080
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - qbit.local
   hostPorts:
     - name: torrenting-tcp
       port: 6881
@@ -26,5 +31,3 @@ app:
   env:
     TORRENTING_PORT: "6881"
     WEBUI_PORT: "8080"
-  hostnames:
-    - qbit.local

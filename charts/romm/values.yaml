@@ -1,6 +1,4 @@
 http-app:
-  hostnames:
-    - romm.local
   name: romm
   image: "rommapp/romm:latest"
   replicas: 1
@@ -9,7 +7,11 @@ http-app:
     requests:
       cpu: 200m
       memory: 512Mi
-  httpRoutePath: "/"
+  gateway:
+    enabled: true
+    hostnames:
+      - romm.local
+    httpRoutePath: "/"
   volumeMounts:
     - name: config
       mountPath: /romm/config # (Optional) Path where config.yml is stored
@@ -72,7 +74,8 @@ database:
   replicas: 1
   servicePort: 3306
   exposeService: true
-  exposeGateway: false
+  gateway:
+    enabled: false
   resources:
     requests:
       cpu: 200m

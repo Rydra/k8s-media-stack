@@ -1,13 +1,10 @@
 app:
   name: kapowarr
   image: "mrcas/kapowarr:latest"
-  replicas: 1
   servicePort: 5656
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-  httpRoutePath: "/kapowarr"
+  gateway:
+    enabled: true
+    httpRoutePath: "/kapowarr"
   volumeMounts:
     - name: config
       mountPath: /app/db

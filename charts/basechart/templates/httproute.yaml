@@ -1,4 +1,4 @@
-{{- if .Values.exposeGateway }}
+{{- if .Values.gateway.enabled }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -7,18 +7,18 @@ spec:
   parentRefs:
     - name: traefik-gateway
       namespace: kube-system
-      {{- if .Values.secureGateway }}
+      {{- if .Values.gateway.secure }}
       sectionName: websecure
       {{- end }}
   # NOTE: If no hostnames are given, this will match them all. For a local
   # setup it's perfect.
   hostnames:
-    {{- toYaml .Values.hostnames | nindent 4 }}
+    {{- toYaml .Values.gateway.hostnames | nindent 4 }}
   rules:
     - matches:
       - path:
           type: PathPrefix
-          value: {{ .Values.httpRoutePath }}
+          value: {{ .Values.gateway.httpRoutePath }}
       backendRefs:
         - name: {{ .Values.name }}
           port: {{ .Values.servicePort }}

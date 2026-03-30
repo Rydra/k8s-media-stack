@@ -3,6 +3,9 @@ app:
   image: "lscr.io/linuxserver/bazarr:latest"
   replicas: 1
   servicePort: 6767
+  gateway:
+    enabled: true
+    httpRoutePath: "/bazarr"
   resources:
     requests:
       cpu: 200m
@@ -10,7 +13,6 @@ app:
     limits:
       cpu: 1
       memory: 1024Mi
-  httpRoutePath: "/bazarr"
   volumeMounts:
     - name: config
       mountPath: /config

@@ -3,7 +3,9 @@ app:
   image: "linuxserver/sonarr:latest"
   replicas: 1
   servicePort: 8989
-  httpRoutePath: "/sonarr"
+  gateway:
+    enabled: true
+    httpRoutePath: "/sonarr"
   volumeMounts:
     - name: config
       mountPath: /config

@@ -3,9 +3,10 @@ app:
   image: "linuxserver/readarr:0.4.19-nightly"
   replicas: 1
   servicePort: 8787
-  livenessProbe:
-  readinessProbe:
-  httpRoutePath: "/readarr"
+  gateway:
+    enabled: true
+    httpRoutePath: "/readarr"
+  exposeService: true
   volumeMounts:
     - name: config
       mountPath: /config

@@ -3,9 +3,9 @@ app:
   image: "lscr.io/linuxserver/sabnzbd:latest"
   replicas: 1
   servicePort: 8080
-  livenessProbe:
-  readinessProbe:
-  httpRoutePath: "/"
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
   volumeMounts:
     - name: config
       mountPath: /config
