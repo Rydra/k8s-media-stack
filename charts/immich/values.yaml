@@ -1,10 +1,12 @@
-service:
-  name: immich-server
-  httpRoutePath: "/"
+name: immich-server
+
+pod:
   servicePort: 2283
 
-hostnames:
-  - immich.local
+gateway:
+  httpRoutePath: "/"
+  hostnames:
+    - immich.local
 
 app:
   ## This chart relies on the common library chart from bjw-s
@@ -120,19 +122,23 @@ app:
 
 database:
   name: immich-db
-  image: "registry.hub.docker.com/tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:90724186f0a3517cf6914295b5ab410db9ce23190a2d9d0b9dd6463e3fa298f0"
   replicas: 1
-  servicePort: 5432
-  exposeGateway: false
-  volumeMounts:
-    - name: config
-      mountPath: /var/lib/postgresql/data
-      subPath: immich-db
-  environmentData:
-    env:
-      POSTGRES_PASSWORD: "postgres"
-      POSTGRES_USERNAME: "postgres"
-      POSTGRES_DB: "immich"
+  pod:
+    image: "registry.hub.docker.com/tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:90724186f0a3517cf6914295b5ab410db9ce23190a2d9d0b9dd6463e3fa298f0"
+    ports:
+      servicePort: 5432
+    volumeMounts:
+      - name: config
+        mountPath: /var/lib/postgresql/data
+        subPath: immich-db
+    environmentData:
+      env:
+        POSTGRES_PASSWORD: "postgres"
+        POSTGRES_USERNAME: "postgres"
+        POSTGRES_DB: "immich"
 
-  securityContext:
-    fsGroup: 1000
+    securityContext:
+      fsGroup: 1000
+
+  gateway:
+    enabled: false

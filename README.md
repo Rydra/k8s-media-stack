@@ -75,6 +75,3 @@ requires HTTPs to function properly.
 * **flaresolverr**: A simple chart that exposes _Flaresolverr_, require by *arr applications
 to resolve CloudFlare blockings.
 * **homepage**: A nice homepage to
-
-## Traefik configuration
-

@@ -14,13 +14,6 @@ app:
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
-    storage:
-      extraVolumes:
-        - name: homepage-files
-          configMap:
-            name: homepage-files
-        - name: logs
-          emptyDir: {}
     volumeMounts:
       - mountPath: /app/config/custom.js
         name: homepage-files
@@ -59,6 +52,13 @@ app:
     annotations:
       reloader.stakater.com/auto: "true"
 
+  storage:
+    extraVolumes:
+      - name: homepage-files
+        configMap:
+          name: homepage-files
+      - name: logs
+        emptyDir: {}
   gateway:
     enabled: true
     httpRoutePath: "/"

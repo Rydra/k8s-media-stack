@@ -18,10 +18,16 @@ namespace := media-stack
 
 ### Deployments
 
+bootstrap:
+	# For this to work you'll need to have the secrets deployed beforehand
+	sudo cp traefik/values.yaml /var/lib/rancher/k3s/server/manifests/traefik-custom.yaml
+	$(MAKE) deploy-support
+	$(MAKE) deploy-all
+
 deploy:
 	helm upgrade --install $(chart) charts/$(chart) -n $(namespace) --create-namespace
 
-service := radarr
+service :=
 
 deploy-volumes:
 	helm upgrade --install volumes charts/volumes -n volumes
