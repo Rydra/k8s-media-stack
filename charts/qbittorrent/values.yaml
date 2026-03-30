@@ -3,18 +3,18 @@ app:
   image: "linuxserver/qbittorrent:latest"
   replicas: 1
   servicePort: 8080
-  gateway:
-    enabled: true
-    httpRoutePath: "/"
-    hostnames:
-      - qbit.local
-  hostPorts:
+  extraPorts:
     - name: torrenting-tcp
       port: 6881
       protocol: TCP
     - name: torrenting-udp
       port: 6881
       protocol: UDP
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - qbit.local
   volumeMounts:
     - name: config
       mountPath: /config

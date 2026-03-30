@@ -3,7 +3,7 @@ app:
   image: "ngosang/amule:latest"
   replicas: 1
   servicePort: 4711
-  hostPorts:
+  extraPorts:
     - name: amule-tcp
       port: 4662
       protocol: TCP
@@ -13,11 +13,11 @@ app:
     - name: extended-udp
       port: 4672
       protocol: UDP
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-  httpRoutePath: "/"
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - amule.local
   volumeMounts:
     - name: config
       mountPath: /home/amule/.aMule
@@ -41,5 +41,3 @@ app:
       TZ: "Europe/Madrid"
       PUID: "1000"
       PGID: "1000"
-  hostnames:
-    - amule.local

@@ -58,6 +58,11 @@ spec:
           ports:
             - containerPort: {{ .Values.servicePort }}
               protocol: TCP
+            {{- range .Values.extraPorts}}
+            - containerPort: {{ .port }}
+              protocol: {{ .protocol | default "TCP" }}
+              name: {{ .name }}
+            {{- end }}
             {{- range .Values.hostPorts }}
             - containerPort: {{ .port }}
               protocol: {{ .protocol | default "TCP" }}
