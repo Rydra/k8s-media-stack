@@ -15,7 +15,6 @@ app:
     - name: torrenting-udp
       port: 6881
       protocol: UDP
-  httpRoutePath: "/"
   volumeMounts:
     - name: config
       mountPath: /config
@@ -28,6 +27,7 @@ app:
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
-  env:
-    TORRENTING_PORT: "6881"
-    WEBUI_PORT: "8080"
+  environmentData:
+    env:
+      TORRENTING_PORT: "6881"
+      WEBUI_PORT: "8080"

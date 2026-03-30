@@ -18,18 +18,13 @@ app:
     dnsPolicy: ClusterFirst
     enableServiceLinks: true
 
-  # This will require to prepopulate env var secrets beforehand. The ones
-  # required are:
-  # - HOMEPAGE_VAR_KOMGA_USER
-  # - HOMEPAGE_VAR_KOMGA_PW
-  envSecretName: "homepage-secret-env"
-
-  extraVolumes:
-    - name: homepage-files
-      configMap:
-        name: homepage-files
-    - name: logs
-      emptyDir: {}
+  storage:
+    extraVolumes:
+      - name: homepage-files
+        configMap:
+          name: homepage-files
+      - name: logs
+        emptyDir: {}
   volumeMounts:
     - mountPath: /app/config/custom.js
       name: homepage-files
@@ -57,8 +52,14 @@ app:
       subPath: widgets.yaml
     - mountPath: /app/config/logs
       name: logs
-  env:
-    HOMEPAGE_ALLOWED_HOSTS: "home.local"
+  environmentData:
+    # This will require to prepopulate env var secrets beforehand. The ones
+    # required are:
+    # - HOMEPAGE_VAR_KOMGA_USER
+    # - HOMEPAGE_VAR_KOMGA_PW
+    envSecretName: "homepage-secret-env"
+    env:
+      HOMEPAGE_ALLOWED_HOSTS: "home.local"
 
   annotations:
     reloader.stakater.com/auto: "true"

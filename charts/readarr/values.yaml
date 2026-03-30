@@ -6,7 +6,6 @@ app:
   gateway:
     enabled: true
     httpRoutePath: "/readarr"
-  exposeService: true
   volumeMounts:
     - name: config
       mountPath: /config

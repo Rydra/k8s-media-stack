@@ -6,19 +6,20 @@ app:
   gateway:
     enabled: true
     httpRoutePath: "/komga"
-  livenessProbe:
-    httpGet:
-      path: /komga/actuator/health
-      port: 25600
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    failureThreshold: 1
-  readinessProbe:
-    httpGet:
-      path: /komga/actuator/health
-      port: 25600
-    initialDelaySeconds: 30
-    periodSeconds: 5
+  probes:
+    livenessProbe:
+      httpGet:
+        path: /komga/actuator/health
+        port: 25600
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      failureThreshold: 1
+    readinessProbe:
+      httpGet:
+        path: /komga/actuator/health
+        port: 25600
+      initialDelaySeconds: 30
+      periodSeconds: 5
   volumeMounts:
     - name: config
       mountPath: /config

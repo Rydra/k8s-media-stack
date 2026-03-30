@@ -10,8 +10,9 @@ app:
     - name: media
       mountPath: /downloads
       subPath: media/youtube
-  env:
-    URL_PREFIX: "/metube"
+  environmentData:
+    env:
+      URL_PREFIX: "/metube"
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000

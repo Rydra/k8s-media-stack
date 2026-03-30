@@ -8,7 +8,6 @@ app:
     httpRoutePath: "/"
     hostnames:
       - retrom.local
-  exposeService: true
   volumeMounts:
     - name: config
       mountPath: /app/config/

@@ -16,6 +16,7 @@ app:
     - name: media
       mountPath: /data/comics
       subPath: media/books/comics
-  env:
-    PUID: "1000"
-    PGID: "1000"
+  environmentData:
+    env:
+      PUID: "1000"
+      PGID: "1000"

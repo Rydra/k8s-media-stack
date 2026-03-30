@@ -9,7 +9,6 @@ app:
     secure: true
     hostnames:
       - "vault.local"
-  exposeService: true
   volumeMounts:
     - name: config
       mountPath: /data

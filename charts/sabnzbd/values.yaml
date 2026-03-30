@@ -6,6 +6,8 @@ app:
   gateway:
     enabled: true
     httpRoutePath: "/"
+    hostnames:
+      - sabnzbd.local
   volumeMounts:
     - name: config
       mountPath: /config
@@ -13,9 +15,8 @@ app:
     - name: media
       mountPath: /downloads
       subPath: downloads/sabnzbd
-  env:
-    PUID: "1000"
-    PGID: "1000"
-    TZ: "Etc/UTC"
-  hostnames:
-    - sabnzbd.local
+  environmentData:
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Etc/UTC"

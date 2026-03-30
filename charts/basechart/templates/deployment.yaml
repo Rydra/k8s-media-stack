@@ -22,14 +22,13 @@ spec:
       {{- toYaml .Values.podOptions | nindent 6 }}
       {{- end }}
       volumes:
-        - name: config
+        {{- range .Values.storage.fromClaims }}
+        - name: {{ .name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.storage.configClaimName }}
-        - name: media
-          persistentVolumeClaim:
-            claimName: {{ .Values.storage.mediaClaimName }}
-        {{- if .Values.extraVolumes }}
-          {{- toYaml .Values.extraVolumes | nindent 8 }}
+            claimName: {{ .claimName }}
+        {{- end }}
+        {{- if .Values.storage.extraVolumes }}
+          {{- toYaml .Values.storage.extraVolumes | nindent 8 }}
         {{- end }}
       {{- if .Values.securityContext }}
       securityContext:
@@ -48,13 +47,13 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.livenessProbe }}
+          {{- if .Values.probes.livenessProbe }}
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
+            {{- toYaml .Values.probes.livenessProbe | nindent 12 }}
           {{- end }}
-          {{- if .Values.readinessProbe }}
+          {{- if .Values.probes.readinessProbe }}
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            {{- toYaml .Values.probes.readinessProbe | nindent 12 }}
           {{- end }}
           ports:
             - containerPort: {{ .Values.servicePort }}
@@ -72,12 +71,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}-config
-            {{- if .Values.envSecretName }}
+            {{- if .Values.environmentData.envSecretName }}
             - secretRef:
-                name: {{ .Values.envSecretName }}
+                name: {{ .Values.environmentData.envSecretName }}
             {{- end }}
           env:
-            {{- range .Values.envSecrets }}
+            {{- range .Values.environmentData.envSecrets }}
             - name: {{ .name }}
               valueFrom:
                 secretKeyRef:

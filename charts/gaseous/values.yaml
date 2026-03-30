@@ -22,20 +22,21 @@ app:
     - name: media
       mountPath: /app/romlibrary
       subPath: games/rom-library
-  env:
-    dbhost: "gaseous-db" # The Postgres container will run in the same pod, so we can use localhost to connect to it
-    dbuser: "root" # Should match MARIADB_USER in mariadb
-    TZ: "Europe/Madrid"
-  envSecrets:
-    - name: dbpass
-      secretName: gaseous-secrets
-      key: MARIADB_ROOT_PASSWORD
-    - name: igdbclientid
-      secretName: gaseous-secrets
-      key: IGDB_CLIENT_ID
-    - name: igdbclientsecret
-      secretName: gaseous-secrets
-      key: IGDB_CLIENT_SECRET
+  environmentData:
+    env:
+      dbhost: "gaseous-db" # The Postgres container will run in the same pod, so we can use localhost to connect to it
+      dbuser: "root" # Should match MARIADB_USER in mariadb
+      TZ: "Europe/Madrid"
+    envSecrets:
+      - name: dbpass
+        secretName: gaseous-secrets
+        key: MARIADB_ROOT_PASSWORD
+      - name: igdbclientid
+        secretName: gaseous-secrets
+        key: IGDB_CLIENT_ID
+      - name: igdbclientsecret
+        secretName: gaseous-secrets
+        key: IGDB_CLIENT_SECRET
 
 database:
   name: gaseous-db
@@ -51,26 +52,28 @@ database:
     limits:
       cpu: 2000m
       memory: 4Gi
-  livenessProbe:
-    exec:
-      command:
-        - "healthcheck.sh"
-        - "--connect"
-        - "--innodb_initialized"
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    failureThreshold: 5
-    timeoutSeconds: 5
+  probes:
+    livenessProbe:
+      exec:
+        command:
+          - "healthcheck.sh"
+          - "--connect"
+          - "--innodb_initialized"
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      failureThreshold: 5
+      timeoutSeconds: 5
   volumeMounts:
     - name: config
       mountPath: /var/lib/mysql
       subPath: gaseous
-  env:
-    MARIADB_USER: "gaseous"
-  envSecrets:
-    - name: MARIADB_PASSWORD
-      secretName: gaseous-secrets
-      key: MARIADB_PASSWORD
-    - name: MARIADB_ROOT_PASSWORD
-      secretName: gaseous-secrets
-      key: MARIADB_ROOT_PASSWORD
+  environmentData:
+    env:
+      MARIADB_USER: "gaseous"
+    envSecrets:
+      - name: MARIADB_PASSWORD
+        secretName: gaseous-secrets
+        key: MARIADB_PASSWORD
+      - name: MARIADB_ROOT_PASSWORD
+        secretName: gaseous-secrets
+        key: MARIADB_ROOT_PASSWORD

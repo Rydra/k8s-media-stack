@@ -28,17 +28,18 @@ app:
     - name: media
       mountPath: /temp
       subPath: downloads/amule/temp
-  env:
-    MOD_AUTO_RESTART_ENABLED: "true"
-    MOD_AUTO_RESTART_CRON: "0 6 * * *"
-    MOD_AUTO_SHARE_ENABLED: "false"
-    MOD_AUTO_SHARE_DIRECTORIES: "/incoming"
-    MOD_FIX_KAD_GRAPH_ENABLED: "true"
-    MOD_FIX_KAD_BOOTSTRAP_ENABLED: "true"
-    GUI_PWD: "mypass"
-    WEBUI_PWD: "mypass"
-    TZ: "Europe/Madrid"
-    PUID: "1000"
-    PGID: "1000"
+  environmentData:
+    env:
+      MOD_AUTO_RESTART_ENABLED: "true"
+      MOD_AUTO_RESTART_CRON: "0 6 * * *"
+      MOD_AUTO_SHARE_ENABLED: "false"
+      MOD_AUTO_SHARE_DIRECTORIES: "/incoming"
+      MOD_FIX_KAD_GRAPH_ENABLED: "true"
+      MOD_FIX_KAD_BOOTSTRAP_ENABLED: "true"
+      GUI_PWD: "mypass"
+      WEBUI_PWD: "mypass"
+      TZ: "Europe/Madrid"
+      PUID: "1000"
+      PGID: "1000"
   hostnames:
     - amule.local

@@ -18,15 +18,16 @@ app:
     - name: media
       mountPath: /usr/src/paperless/consume
       subPath: documents/import
-  env:
-    PAPERLESS_REDIS: "redis://paperless-redis:6379"
-    PAPERLESS_DBHOST: "paperless-db"
-    PAPERLESS_TIKA_ENABLED: "1"
-    PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://paperless-gotenberg:3000"
-    PAPERLESS_TIKA_ENDPOINT: "http://paperless-tika:9998"
-    PAPERLESS_CONSUMER_POLLING: "20"
-    PAPERLESS_FILENAME_FORMAT: "{title}"
-    PAPERLESS_FORCE_SCRIPT_NAME: "/paperless"
+  environmentData:
+    env:
+      PAPERLESS_REDIS: "redis://paperless-redis:6379"
+      PAPERLESS_DBHOST: "paperless-db"
+      PAPERLESS_TIKA_ENABLED: "1"
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://paperless-gotenberg:3000"
+      PAPERLESS_TIKA_ENDPOINT: "http://paperless-tika:9998"
+      PAPERLESS_CONSUMER_POLLING: "20"
+      PAPERLESS_FILENAME_FORMAT: "{title}"
+      PAPERLESS_FORCE_SCRIPT_NAME: "/paperless"
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
@@ -42,10 +43,11 @@ database:
     - name: config
       mountPath: /var/lib/postgresql/data
       subPath: paperless-ngx/postgres
-  env:
-    POSTGRES_USER: "paperless"
-    POSTGRES_PASSWORD: "paperless"
-    POSTGRES_DB: "paperless"
+  environmentData:
+    env:
+      POSTGRES_USER: "paperless"
+      POSTGRES_PASSWORD: "paperless"
+      POSTGRES_DB: "paperless"
   securityContext:
     runAsUser: 0
     runAsGroup: 0

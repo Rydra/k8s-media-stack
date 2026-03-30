@@ -25,10 +25,11 @@ app:
     - name: media
       mountPath: /romlibrary
       subPath: games/rom-library
-  env:
-    PUID: "1000"
-    PGID: "1000"
-  envSecrets:
-    - name: APP_KEY
-      secretName: gameyfin-secrets
-      key: APP_KEY
+  environmentData:
+    env:
+      PUID: "1000"
+      PGID: "1000"
+    envSecrets:
+      - name: APP_KEY
+        secretName: gameyfin-secrets
+        key: APP_KEY

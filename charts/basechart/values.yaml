@@ -1,3 +1,8 @@
+# This chart is intended to manage a single deployment, which is almost
+# always the case for media stack apps. If you need to manage multiple
+# deployments, you can create multiple instances of this chart with different
+# aliases
+
 name: ""
 image: ""
 replicas: 1
@@ -12,13 +17,6 @@ hostPorts: []
 
 podOptions: {}
 
-# Optional name of a Kubernetes Secret containing environment variables to be
-# injected into the container. The Secret should be in the same
-# namespace as the Deployment and should have key-value pairs where
-# the key is the name of the environment variable and the value is the
-# value of the environment variable.
-envSecretName: ""
-
 gateway:
   enabled: true
   secure: false
@@ -29,6 +27,7 @@ gateway:
   httpRoutePath: ""
 
 exposeService: true
+
 resources:
   requests:
     cpu: 200m
@@ -36,26 +35,21 @@ resources:
   limits: {}
   #   cpu: 1
   #   memory: 1024Mi
-livenessProbe: {}
-  # httpGet:
-  #   path: /komga/actuator/health
-  #   port: 25600
-  # initialDelaySeconds: 30
-  # periodSeconds: 10
-  # failureThreshold: 1
-readinessProbe: {}
-  # httpGet:
-  #   path: /komga/actuator/health
-  #   port: 25600
-  # initialDelaySeconds: 30
-  # periodSeconds: 5
 
-extraVolumes: []
-  # - name: homepage-config
-  #   configMap:
-  #     name: homepage-config
-  # - name: logs
-  #   emptyDir: {}
+probes:
+  livenessProbe: {}
+    # httpGet:
+    #   path: /komga/actuator/health
+    #   port: 25600
+    # initialDelaySeconds: 30
+    # periodSeconds: 10
+    # failureThreshold: 1
+  readinessProbe: {}
+    # httpGet:
+    #   path: /komga/actuator/health
+    #   port: 25600
+    # initialDelaySeconds: 30
+    # periodSeconds: 5
 
 volumeMounts: []
   # - name: config
@@ -64,11 +58,19 @@ volumeMounts: []
   # - name: media
   #   mountPath: /data
   #   subPath: media/books
-env: {}
-envSecrets: []
-  # - name: ENV_VAR_NAME
-  #   secretName: secret-name
-  #   key: secret-key
+
+environmentData:
+  env: {}
+  envSecrets: []
+    # - name: ENV_VAR_NAME
+    #   secretName: secret-name
+    #   key: secret-key
+  # Optional name of a Kubernetes Secret containing environment variables to be
+  # injected into the container. The Secret should be in the same
+  # namespace as the Deployment and should have key-value pairs where
+  # the key is the name of the environment variable and the value is the
+  # value of the environment variable.
+  envSecretName: ""
 
 securityContext: {}
   # runAsUser: 1000
@@ -76,5 +78,16 @@ securityContext: {}
   # fsGroup: 1000
 
 storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
+  # Load these claims into the chart to be used as volume mounts. The chart will not
+  # create these claims.
+  fromClaims:
+    - name: "config"
+      claimName: "config-pvc"
+    - name: "media"
+      claimName: "media-pvc"
+  extraVolumes: []
+    # - name: homepage-config
+    #   configMap:
+    #     name: homepage-config
+    # - name: logs
+    #   emptyDir: {}
