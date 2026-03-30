@@ -1,116 +1,121 @@
 app:
   name: paperless-ngx
-  image: "ghcr.io/paperless-ngx/paperless-ngx:latest"
+  replicas: 1
 
   pod:
+    image: "ghcr.io/paperless-ngx/paperless-ngx:latest"
     ports:
       servicePort: 8000
+    volumeMounts:
+      - name: config
+        mountPath: /usr/src/paperless/data
+        subPath: paperless-ngx/data
+      - name: media
+        mountPath: /usr/src/paperless/media
+        subPath: documents/paperless
+      - name: media
+        mountPath: /usr/src/paperless/export
+        subPath: documents/export
+      - name: media
+        mountPath: /usr/src/paperless/consume
+        subPath: documents/import
+    environmentData:
+      env:
+        PAPERLESS_REDIS: "redis://paperless-redis:6379"
+        PAPERLESS_DBHOST: "paperless-db"
+        PAPERLESS_TIKA_ENABLED: "1"
+        PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://paperless-gotenberg:3000"
+        PAPERLESS_TIKA_ENDPOINT: "http://paperless-tika:9998"
+        PAPERLESS_CONSUMER_POLLING: "20"
+        PAPERLESS_FILENAME_FORMAT: "{title}"
+        PAPERLESS_FORCE_SCRIPT_NAME: "/paperless"
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
 
   gateway:
     enabled: true
     httpRoutePath: "/paperless"
-  volumeMounts:
-    - name: config
-      mountPath: /usr/src/paperless/data
-      subPath: paperless-ngx/data
-    - name: media
-      mountPath: /usr/src/paperless/media
-      subPath: documents/paperless
-    - name: media
-      mountPath: /usr/src/paperless/export
-      subPath: documents/export
-    - name: media
-      mountPath: /usr/src/paperless/consume
-      subPath: documents/import
-  environmentData:
-    env:
-      PAPERLESS_REDIS: "redis://paperless-redis:6379"
-      PAPERLESS_DBHOST: "paperless-db"
-      PAPERLESS_TIKA_ENABLED: "1"
-      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://paperless-gotenberg:3000"
-      PAPERLESS_TIKA_ENDPOINT: "http://paperless-tika:9998"
-      PAPERLESS_CONSUMER_POLLING: "20"
-      PAPERLESS_FILENAME_FORMAT: "{title}"
-      PAPERLESS_FORCE_SCRIPT_NAME: "/paperless"
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
 
 database:
   name: paperless-db
-  image: "docker.io/library/postgres:15"
+  replicas: 1
 
   pod:
+    image: "docker.io/library/postgres:15"
     ports:
       servicePort: 5432
+    volumeMounts:
+      - name: config
+        mountPath: /var/lib/postgresql/data
+        subPath: paperless-ngx/postgres
+    environmentData:
+      env:
+        POSTGRES_USER: "paperless"
+        POSTGRES_PASSWORD: "paperless"
+        POSTGRES_DB: "paperless"
+    securityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      fsGroup: 0
 
   gateway:
     enabled: false
-  volumeMounts:
-    - name: config
-      mountPath: /var/lib/postgresql/data
-      subPath: paperless-ngx/postgres
-  environmentData:
-    env:
-      POSTGRES_USER: "paperless"
-      POSTGRES_PASSWORD: "paperless"
-      POSTGRES_DB: "paperless"
-  securityContext:
-    runAsUser: 0
-    runAsGroup: 0
-    fsGroup: 0
 
 gotenberg:
   name: paperless-gotenberg
-  image: "docker.io/gotenberg/gotenberg:7.10"
-  command:
-    - gotenberg
-  commandArgs:
-    - "--chromium-disable-javascript=true"
-    - "--chromium-allow-list=file:///tmp/.*"
+  replicas: 1
 
   pod:
+    image: "docker.io/gotenberg/gotenberg:7.10"
     ports:
       servicePort: 3000
+    command:
+      - gotenberg
+    commandArgs:
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
 
   gateway:
     enabled: false
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
 
 tika:
   name: paperless-tika
-  image: "apache/tika:3.2.3.0-full"
+  replicas: 1
 
   pod:
+    image: "apache/tika:3.2.3.0-full"
     ports:
       servicePort: 9998
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
 
   gateway:
     enabled: false
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
 
 redis:
   name: paperless-redis
-  image: "docker.io/library/redis:7"
+  replicas: 1
 
   pod:
+    image: "docker.io/library/redis:7"
     ports:
       servicePort: 6379
+    volumeMounts:
+      - name: config
+        mountPath: /data
+        subPath: paperless-ngx/redis
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
 
   gateway:
     enabled: false
-  volumeMounts:
-    - name: config
-      mountPath: /data
-      subPath: paperless-ngx/redis
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000

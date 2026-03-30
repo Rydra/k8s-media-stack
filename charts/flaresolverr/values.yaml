@@ -1,15 +1,15 @@
 app:
   name: flaresolverr
-  image: "ghcr.io/flaresolverr/flaresolverr:latest"
   replicas: 1
 
   pod:
+    image: "ghcr.io/flaresolverr/flaresolverr:latest"
     ports:
       servicePort: 8191
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
 
   gateway:
     enabled: false
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000

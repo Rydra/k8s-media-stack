@@ -1,37 +1,37 @@
 app:
   name: komga
-  image: "gotson/komga:latest"
   replicas: 1
 
   pod:
+    image: "gotson/komga:latest"
     ports:
       servicePort: 25600
+    probes:
+      livenessProbe:
+        httpGet:
+          path: /komga/actuator/health
+          port: 25600
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        failureThreshold: 1
+      readinessProbe:
+        httpGet:
+          path: /komga/actuator/health
+          port: 25600
+        initialDelaySeconds: 30
+        periodSeconds: 5
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        subPath: komga
+      - name: media
+        mountPath: /data
+        subPath: media/books
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
 
   gateway:
     enabled: true
     httpRoutePath: "/komga"
-  probes:
-    livenessProbe:
-      httpGet:
-        path: /komga/actuator/health
-        port: 25600
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      failureThreshold: 1
-    readinessProbe:
-      httpGet:
-        path: /komga/actuator/health
-        port: 25600
-      initialDelaySeconds: 30
-      periodSeconds: 5
-  volumeMounts:
-    - name: config
-      mountPath: /config
-      subPath: komga
-    - name: media
-      mountPath: /data
-      subPath: media/books
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000

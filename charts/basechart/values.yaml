@@ -4,10 +4,10 @@
 # aliases
 
 name: ""
-image: ""
 replicas: 1
 
 pod:
+  image: ""
   ports:
     servicePort: 25600
     extraPorts: []
@@ -25,9 +25,58 @@ pod:
       #   port: 4662
       #   protocol: TCP
 
-annotations: {}
+  annotations: {}
 
-podOptions: {}
+  podOptions: {}
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits: {}
+    #   cpu: 1
+    #   memory: 1024Mi
+
+  probes:
+    livenessProbe: {}
+      # httpGet:
+      #   path: /komga/actuator/health
+      #   port: 25600
+      # initialDelaySeconds: 30
+      # periodSeconds: 10
+      # failureThreshold: 1
+    readinessProbe: {}
+      # httpGet:
+      #   path: /komga/actuator/health
+      #   port: 25600
+      # initialDelaySeconds: 30
+      # periodSeconds: 5
+
+  volumeMounts: []
+    # - name: config
+    #   mountPath: /config
+    #   subPath: komga
+    # - name: media
+    #   mountPath: /data
+    #   subPath: media/books
+
+  environmentData:
+    env: {}
+    envSecrets: []
+      # - name: ENV_VAR_NAME
+      #   secretName: secret-name
+      #   key: secret-key
+    # Optional name of a Kubernetes Secret containing environment variables to be
+    # injected into the container. The Secret should be in the same
+    # namespace as the Deployment and should have key-value pairs where
+    # the key is the name of the environment variable and the value is the
+    # value of the environment variable.
+    envSecretName: ""
+
+  securityContext: {}
+    # runAsUser: 1000
+    # runAsGroup: 1000
+    # fsGroup: 1000
 
 gateway:
   enabled: true
@@ -39,55 +88,6 @@ gateway:
   httpRoutePath: ""
 
 exposeService: true
-
-resources:
-  requests:
-    cpu: 200m
-    memory: 512Mi
-  limits: {}
-  #   cpu: 1
-  #   memory: 1024Mi
-
-probes:
-  livenessProbe: {}
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 10
-    # failureThreshold: 1
-  readinessProbe: {}
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
-
-volumeMounts: []
-  # - name: config
-  #   mountPath: /config
-  #   subPath: komga
-  # - name: media
-  #   mountPath: /data
-  #   subPath: media/books
-
-environmentData:
-  env: {}
-  envSecrets: []
-    # - name: ENV_VAR_NAME
-    #   secretName: secret-name
-    #   key: secret-key
-  # Optional name of a Kubernetes Secret containing environment variables to be
-  # injected into the container. The Secret should be in the same
-  # namespace as the Deployment and should have key-value pairs where
-  # the key is the name of the environment variable and the value is the
-  # value of the environment variable.
-  envSecretName: ""
-
-securityContext: {}
-  # runAsUser: 1000
-  # runAsGroup: 1000
-  # fsGroup: 1000
 
 storage:
   # Load these claims into the chart to be used as volume mounts. The chart will not

@@ -119,7 +119,8 @@ scale-up-all:
 ### Immich has high memory usage, so we'll scale it down separately
 
 update-deps:
-	helm dependency update charts/$(chart)
+	# No need to update all repositories every single time
+	helm dependency update charts/$(chart) --skip-refresh
 
 update-deps-all:
 	$(MAKE) update-deps chart=bazarr

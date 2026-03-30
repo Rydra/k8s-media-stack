@@ -1,26 +1,26 @@
 app:
   name: lidarr
-  image: "lscr.io/linuxserver/lidarr:latest"
   replicas: 1
 
   pod:
+    image: "lscr.io/linuxserver/lidarr:latest"
     ports:
       servicePort: 8686
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        subPath: lidarr
+      - name: media
+        mountPath: /downloads
+        subPath: downloads
+      - name: media
+        mountPath: /media/music
+        subPath: media/music
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
 
   gateway:
     enabled: true
     httpRoutePath: "/lidarr"
-  volumeMounts:
-    - name: config
-      mountPath: /config
-      subPath: lidarr
-    - name: media
-      mountPath: /downloads
-      subPath: downloads
-    - name: media
-      mountPath: /media/music
-      subPath: media/music
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000

@@ -1,26 +1,26 @@
 app:
   name: mylar3
-  image: "lscr.io/linuxserver/mylar3:latest"
   replicas: 1
 
   pod:
+    image: "lscr.io/linuxserver/mylar3:latest"
     ports:
       servicePort: 8090
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        subPath: mylar3
+      - name: media
+        mountPath: /downloads
+        subPath: downloads
+      - name: media
+        mountPath: /data/comics
+        subPath: media/books/comics
+    environmentData:
+      env:
+        PUID: "1000"
+        PGID: "1000"
 
   gateway:
     enabled: true
     httpRoutePath: "/mylar3"
-  volumeMounts:
-    - name: config
-      mountPath: /config
-      subPath: mylar3
-    - name: media
-      mountPath: /downloads
-      subPath: downloads
-    - name: media
-      mountPath: /data/comics
-      subPath: media/books/comics
-  environmentData:
-    env:
-      PUID: "1000"
-      PGID: "1000"

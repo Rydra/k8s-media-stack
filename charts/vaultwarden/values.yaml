@@ -1,11 +1,15 @@
 app:
   name: vaultwarden
-  image: "vaultwarden/server:latest"
   replicas: 1
 
   pod:
+    image: "vaultwarden/server:latest"
     ports:
       servicePort: 80
+    volumeMounts:
+      - name: config
+        mountPath: /data
+        subPath: vaultwarden
 
   gateway:
     enabled: true
@@ -13,7 +17,3 @@ app:
     secure: true
     hostnames:
       - "vault.local"
-  volumeMounts:
-    - name: config
-      mountPath: /data
-      subPath: vaultwarden

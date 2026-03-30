@@ -5,8 +5,8 @@ metadata:
     app.kubernetes.io/name: {{ .Values.name | required "Please provide a name for the service you want to deploy" }}
   name: {{ .Values.name }}
   annotations:
-    {{- if .Values.annotations }}
-    {{- toYaml .Values.annotations | nindent 4 }}
+    {{- if .Values.pod.annotations }}
+    {{- toYaml .Values.pod.annotations | nindent 4 }}
     {{- end }}
 spec:
   replicas: {{ .Values.replicas }}
@@ -18,8 +18,8 @@ spec:
       labels:
         app.kubernetes.io/name: {{ .Values.name }}
     spec:
-      {{- if .Values.podOptions -}}
-      {{- toYaml .Values.podOptions | nindent 6 }}
+      {{- if .Values.pod.podOptions -}}
+      {{- toYaml .Values.pod.podOptions | nindent 6 }}
       {{- end }}
       volumes:
         {{- range .Values.storage.fromClaims }}
@@ -30,12 +30,12 @@ spec:
         {{- if .Values.storage.extraVolumes }}
           {{- toYaml .Values.storage.extraVolumes | nindent 8 }}
         {{- end }}
-      {{- if .Values.securityContext }}
+      {{- if .Values.pod.securityContext }}
       securityContext:
-        {{- toYaml .Values.securityContext | nindent 8 }}
+        {{- toYaml .Values.pod.securityContext | nindent 8 }}
       {{- end }}
       containers:
-        - image: {{ .Values.image | required "Please provide an image for the service you want to deploy" }}
+        - image: {{ .Values.pod.image | required "Please provide an image for the service you want to deploy" }}
           name: {{ .Values.name }}
           {{- if .Values.command }}
           command:
@@ -46,14 +46,14 @@ spec:
             {{- toYaml .Values.commandArgs | nindent 12 }}
           {{- end }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.probes.livenessProbe }}
+            {{- toYaml .Values.pod.resources | nindent 12 }}
+          {{- if .Values.pod.probes.livenessProbe }}
           livenessProbe:
-            {{- toYaml .Values.probes.livenessProbe | nindent 12 }}
+            {{- toYaml .Values.pod.probes.livenessProbe | nindent 12 }}
           {{- end }}
-          {{- if .Values.probes.readinessProbe }}
+          {{- if .Values.pod.probes.readinessProbe }}
           readinessProbe:
-            {{- toYaml .Values.probes.readinessProbe | nindent 12 }}
+            {{- toYaml .Values.pod.probes.readinessProbe | nindent 12 }}
           {{- end }}
           ports:
             - containerPort: {{ .Values.pod.ports.servicePort }}
@@ -69,19 +69,19 @@ spec:
               name: {{ .name }}
               hostPort: {{ .port }}
             {{- end }}
-          {{- if .Values.volumeMounts }}
+          {{- if .Values.pod.volumeMounts }}
           volumeMounts:
-            {{- toYaml .Values.volumeMounts | nindent 12 }}
+            {{- toYaml .Values.pod.volumeMounts | nindent 12 }}
           {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.name }}-config
-            {{- if .Values.environmentData.envSecretName }}
+            {{- if .Values.pod.environmentData.envSecretName }}
             - secretRef:
-                name: {{ .Values.environmentData.envSecretName }}
+                name: {{ .Values.pod.environmentData.envSecretName }}
             {{- end }}
           env:
-            {{- range .Values.environmentData.envSecrets }}
+            {{- range .Values.pod.environmentData.envSecrets }}
             - name: {{ .name }}
               valueFrom:
                 secretKeyRef:

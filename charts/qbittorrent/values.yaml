@@ -1,9 +1,9 @@
 app:
   name: qbittorrent
-  image: "linuxserver/qbittorrent:latest"
   replicas: 1
 
   pod:
+    image: "linuxserver/qbittorrent:latest"
     ports:
       servicePort: 8080
       extraPorts:
@@ -13,25 +13,25 @@ app:
         - name: torrenting-udp
           port: 6881
           protocol: UDP
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        subPath: qbittorrent
+      - name: media
+        mountPath: /downloads
+        subPath: downloads
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    environmentData:
+      env:
+        TORRENTING_PORT: "6881"
+        WEBUI_PORT: "8080"
 
   gateway:
     enabled: true
     httpRoutePath: "/"
     hostnames:
       - qbit.local
-  volumeMounts:
-    - name: config
-      mountPath: /config
-      subPath: qbittorrent
-    - name: media
-      mountPath: /downloads
-      subPath: downloads
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
-  environmentData:
-    env:
-      TORRENTING_PORT: "6881"
-      WEBUI_PORT: "8080"
