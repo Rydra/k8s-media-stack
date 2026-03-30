@@ -1,29 +1,19 @@
-service:
+app:
   name: vaultwarden
-  image: "vaultwarden/server:latest"
   replicas: 1
-  servicePort: 80
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 1
-      #memory: 1024Mi
-  httpRoutePath: "/"
-  livenessProbe:
-  readinessProbe:
-  volumeMounts:
-    - name: config
-      mountPath: /data
-      subPath: vaultwarden
-  env:
 
-securityContext:
+  pod:
+    image: "vaultwarden/server:latest"
+    ports:
+      servicePort: 80
+    volumeMounts:
+      - name: config
+        mountPath: /data
+        subPath: vaultwarden
 
-hostnames: ["vault.local"]
-
-storage:
-  configClaimName: config-pvc
-
-gatewayClassName: traefik
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    secure: true
+    hostnames:
+      - "vault.local"

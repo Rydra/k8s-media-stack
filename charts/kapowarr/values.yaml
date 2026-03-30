@@ -1,0 +1,25 @@
+app:
+  name: kapowarr
+
+  pod:
+    image: "mrcas/kapowarr:latest"
+    ports:
+      servicePort: 5656
+    volumeMounts:
+      - name: config
+        mountPath: /app/db
+        subPath: kapowarr
+      - name: media
+        mountPath: /app/temp_downloads
+        subPath: downloads
+      - name: media
+        mountPath: /comics
+        subPath: media/books/comics
+    environmentData:
+      env:
+        PUID: "1000"
+        PGID: "1000"
+
+  gateway:
+    enabled: true
+    httpRoutePath: "/kapowarr"

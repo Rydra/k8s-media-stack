@@ -1,14 +1,16 @@
+{{- if .Values.exposeService }}
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.service.name }}
-  name: {{ .Values.service.name }}
+    app.kubernetes.io/name: {{ .Values.name }}
+  name: {{ .Values.name }}
 spec:
   ports:
     - name: "http"
-      port: {{ .Values.service.servicePort }}
+      port: {{ .Values.pod.ports.servicePort }}
       protocol: TCP
-      targetPort: {{ .Values.service.servicePort }}
+      targetPort: {{ .Values.pod.ports.servicePort }}
   selector:
-    app.kubernetes.io/name: {{ .Values.service.name }}
+    app.kubernetes.io/name: {{ .Values.name }}
+{{- end }}

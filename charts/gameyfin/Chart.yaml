@@ -1,0 +1,17 @@
+apiVersion: v2
+name: gameyfin
+description: Game library manager and organizer with metadata integration
+
+# A chart can be either an 'application' or a 'library' chart. A library chart
+# is a collection of templates that can be re-used in other charts.
+type: application
+
+version: 0.1.0
+
+appVersion: "latest"
+
+dependencies:
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: app

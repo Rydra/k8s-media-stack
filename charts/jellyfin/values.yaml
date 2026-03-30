@@ -1,46 +1,22 @@
-service:
+app:
   name: jellyfin
-  image: "jellyfin/jellyfin:latest"
-  replicas: 1
-  servicePort: 8096
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 500m
-      #memory: 512Mi
-  livenessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 10
-    # failureThreshold: 1
-  readinessProbe:
-    # httpGet:
-    #   path: /komga/actuator/health
-    #   port: 25600
-    # initialDelaySeconds: 30
-    # periodSeconds: 5
-  httpRoutePath: "/jellyfin"
-  volumeMounts:
-    - name: config
-      mountPath: /config
-      subPath: jellyfin
-    - name: media-storage
-      mountPath: /data
-      subPath: media
 
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  pod:
+    image: "jellyfin/jellyfin:latest"
+    ports:
+      servicePort: 8096
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        subPath: jellyfin
+      - name: media
+        mountPath: /data
+        subPath: media
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
 
-hostnames: []
-
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
-
-gatewayClassName: traefik
+  gateway:
+    enabled: true
+    httpRoutePath: "/jellyfin"

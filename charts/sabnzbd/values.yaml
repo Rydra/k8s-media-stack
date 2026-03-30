@@ -1,0 +1,26 @@
+app:
+  name: sabnzbd
+  replicas: 1
+
+  pod:
+    image: "lscr.io/linuxserver/sabnzbd:latest"
+    ports:
+      servicePort: 8080
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        subPath: sabnzbd
+      - name: media
+        mountPath: /downloads
+        subPath: downloads/sabnzbd
+    environmentData:
+      env:
+        PUID: "1000"
+        PGID: "1000"
+        TZ: "Etc/UTC"
+
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - sabnzbd.local

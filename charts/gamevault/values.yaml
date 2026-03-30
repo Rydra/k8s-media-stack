@@ -1,0 +1,65 @@
+app:
+  name: gamevault
+  replicas: 1
+
+  pod:
+    image: "phalcode/gamevault-backend:latest"
+    ports:
+      servicePort: 8080
+    volumeMounts:
+      - name: media
+        mountPath: /files
+        subPath: games
+      - name: media
+        mountPath: /media
+        subPath: gamevault/media
+    environmentData:
+      env:
+        DB_HOST: "gamevault-db" # The Postgres container will run in the same pod, so we can use localhost to connect to it
+        DB_USERNAME: "gamevault" # Should match MARIADB_USER in mariadb
+        GAMES_SUPPORTED_FILE_FORMATS: ".zip,.rar,.gbc"
+      envSecrets:
+        - name: DB_PASSWORD
+          secretName: gamevault-secrets
+          key: POSTGRES_PASSWORD
+        - name: METADATA_IGDB_CLIENT_ID
+          secretName: gamevault-secrets
+          key: IGDB_CLIENT_ID
+        - name: METADATA_IGDB_CLIENT_SECRET
+          secretName: gamevault-secrets
+          key: IGDB_CLIENT_SECRET
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - gamevault.local
+
+database:
+  name: gamevault-db
+  replicas: 1
+
+  pod:
+    image: "postgres:17"
+    ports:
+      servicePort: 5432
+    volumeMounts:
+      - name: config
+        mountPath: /var/lib/postgresql/data
+        subPath: gamevault
+    environmentData:
+      env:
+        POSTGRES_USER: gamevault
+        POSTGRES_DB: gamevault
+      envSecrets:
+        - name: POSTGRES_PASSWORD
+          secretName: gamevault-secrets
+          key: POSTGRES_PASSWORD
+
+  gateway:
+    enabled: false

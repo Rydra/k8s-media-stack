@@ -1,0 +1,20 @@
+app:
+  name: prowlarr
+  replicas: 1
+
+  pod:
+    image: "linuxserver/prowlarr:latest"
+    ports:
+      servicePort: 9696
+    volumeMounts:
+      - name: config
+        mountPath: /config
+        subPath: prowlarr
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+
+  gateway:
+    enabled: true
+    httpRoutePath: "/prowlarr"

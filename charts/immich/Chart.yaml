@@ -1,0 +1,21 @@
+apiVersion: v2
+name: immich
+description: High-performance photo and video backup solution with machine learning-powered search and organization
+
+# A chart can be either an 'application' or a 'library' chart. A library chart
+# is a collection of templates that can be re-used in other charts.
+type: application
+
+version: 0.1.0
+
+appVersion: "latest"
+
+dependencies:
+  - name: immich
+    repository: "oci://ghcr.io/immich-app/immich-charts"
+    version: "*"
+    alias: "app"
+  - name: basechart
+    version: "0.1.0"
+    repository: "file://../basechart"
+    alias: database

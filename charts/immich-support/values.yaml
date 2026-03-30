@@ -1,9 +1,0 @@
-service:
-  name: immich-server
-  httpRoutePath: "/"
-  servicePort: 2283
-
-hostnames:
-  - immich.local
-
-gatewayClassName: traefik

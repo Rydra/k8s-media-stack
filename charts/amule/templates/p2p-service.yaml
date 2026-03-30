@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: amule-p2p
+spec:
+  # The LoadBalancer type will use directly K3S ServiceLB implementation to expose the ports
+  # to your local machine. you can test the success of them with the following commands:
+  # ➜  code nc -zv 192.168.1.131 6881
+  # Connection to 192.168.1.131 6881 port [tcp/*] succeeded!
+  # ➜  code nc -zvu 192.168.1.131 6881
+  # Connection to 192.168.1.131 6881 port [udp/*] succeeded!
+  type: LoadBalancer
+
+  # externalTrafficPolicy: Local
+  # 1. Preserves the client's real source IP (crucial for BitTorrent
+  #    handshakes and avoiding 'Firewalled' status).
+  # 2. Bypasses the internal cluster NAT, allowing qBittorrent to
+  #    see peers' actual addresses.
+  #
+  # Example: If a packet arrives at node and the header shows source IP as
+  # 207.10.10.10, qBittorrent will see that IP instead of the node's internal cluster IP.
+  # This is essential for proper BitTorrent peer discovery and connectivity,
+  # as qBittorrent relies on accurate source IPs to establish direct connections
+  # with peers. Without this setting, qBittorrent may misinterpret all incoming
+  # traffic as originating from the cluster, leading to connectivity issues and 'Firewalled' status.
+  externalTrafficPolicy: Local
+  selector:
+    app.kubernetes.io/name: amule
+  ports:
+    - name: amule-tcp
+      protocol: TCP
+      port: 4662
+      targetPort: 4662
+    - name: amule-udp
+      protocol: UDP
+      port: 4665
+      targetPort: 4665
+    - name: extended-udp
+      protocol: UDP
+      port: 4672
+      targetPort: 4672

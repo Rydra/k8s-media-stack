@@ -1,32 +1,66 @@
-service:
+includeGlobs:
+  - "configs/*"
+
+app:
   name: homepage
-  image: "ghcr.io/gethomepage/homepage:latest"
   replicas: 1
-  servicePort: 3000
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      #cpu: 1
-      #memory: 1024Mi
-  livenessProbe:
-  readinessProbe:
-  httpRoutePath: "/"
-  volumeMounts:
-  env:
-    HOMEPAGE_ALLOWED_HOSTS: "home.local"
 
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  pod:
+    image: "ghcr.io/gethomepage/homepage:latest"
+    ports:
+      servicePort: 3000
+    podOptions:
+      serviceAccountName: homepage-sa
+      automountServiceAccountToken: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+    volumeMounts:
+      - mountPath: /app/config/custom.js
+        name: homepage-files
+        subPath: custom.js
+      - mountPath: /app/config/custom.css
+        name: homepage-files
+        subPath: custom.css
+      - mountPath: /app/config/bookmarks.yaml
+        name: homepage-files
+        subPath: bookmarks.yaml
+      - mountPath: /app/config/docker.yaml
+        name: homepage-files
+        subPath: docker.yaml
+      - mountPath: /app/config/kubernetes.yaml
+        name: homepage-files
+        subPath: kubernetes.yaml
+      - mountPath: /app/config/services.yaml
+        name: homepage-files
+        subPath: services.yaml
+      - mountPath: /app/config/settings.yaml
+        name: homepage-files
+        subPath: settings.yaml
+      - mountPath: /app/config/widgets.yaml
+        name: homepage-files
+        subPath: widgets.yaml
+      - mountPath: /app/config/logs
+        name: logs
+    environmentData:
+      # This will require to prepopulate env var secrets beforehand. The ones
+      # required are:
+      # - HOMEPAGE_VAR_KOMGA_USER
+      # - HOMEPAGE_VAR_KOMGA_PW
+      envSecretName: "homepage-secret-env"
+      env:
+        HOMEPAGE_ALLOWED_HOSTS: "home.local"
+    annotations:
+      reloader.stakater.com/auto: "true"
 
-hostnames:
-  - home.local
-
-storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
-
-gatewayClassName: traefik
+  storage:
+    extraVolumes:
+      - name: homepage-files
+        configMap:
+          name: homepage-files
+      - name: logs
+        emptyDir: {}
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - home.local

@@ -1,48 +1,209 @@
-service:
-  name: komga
-  image: "gotson/komga:latest"
-  replicas: 1
-  servicePort: 25600
+# ============================================================================
+# BASECHART - Reusable Kubernetes Deployment Template for Media Stack Services
+# ============================================================================
+# This chart is intended to manage a single deployment, which is almost
+# always the case for media stack apps. If you need to manage multiple
+# deployments, you can create multiple instances of this chart with different
+# aliases.
+#
+# USAGE AS A BASE CHART:
+# This chart serves as a reusable dependency for all media-stack services.
+# Dependent charts inherit these defaults and override specific values via
+# their own values.yaml files. The 'app' wrapper (or other aliases defined
+# in Chart.yaml) is used to pass values to this base chart while maintaining
+# namespace isolation for dependency configuration.
+#
+# EXAMPLE OVERRIDE:
+# A dependent chart's values.yaml would have:
+#   app:
+#     pod:
+#       image: "myimage:tag"
+#     gateway:
+#       enabled: true
+# This gets merged with basechart defaults, allowing the dependent chart to
+# customize only what it needs while inheriting sensible defaults.
+# ============================================================================
+
+# ============================================================================
+# Base Configuration
+# ============================================================================
+
+# REQUIRED: Deployment name. Override with your service name (e.g., "jellyfin", "komga")
+name: ""
+
+# Number of pod replicas to run
+replicas: 1
+
+# ============================================================================
+# Pod Configuration
+# ============================================================================
+pod:
+  # REQUIRED: Container image to deploy (image:tag format)
+  image: ""
+
+  # ========================================================================
+  # Port Configuration
+  # ========================================================================
+  ports:
+    # REQUIRED: Primary service port exposed by the container
+    servicePort: 25600
+    # OPTIONAL: Additional container ports (side ports) to expose
+    # These do NOT create additional Services, only Deployments
+    extraPorts: []
+      # - name: amule-tcp
+      #   port: 4662
+      #   protocol: TCP
+      # - name: amule-udp
+      #   port: 4665
+      #   protocol: UDP
+      # - name: extended-udp
+      #   port: 4672
+      #   protocol: UDP
+
+    # OPTIONAL: Host ports to bind container ports to on the node
+    # Use sparingly; generally not recommended in Kubernetes
+    hostPorts: []
+      # - name: "amule-tcp"
+      #   port: 4662
+      #   protocol: TCP
+
+  # ========================================================================
+  # Resource Management
+  # ========================================================================
   resources:
+    # Guaranteed resources requested from the cluster
     requests:
       cpu: 200m
       memory: 512Mi
-    limits:
-      cpu: 1
-      memory: 1024Mi
-  livenessProbe:
-    httpGet:
-      path: /komga/actuator/health
-      port: 25600
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    failureThreshold: 1
-  readinessProbe:
-    httpGet:
-      path: /komga/actuator/health
-      port: 25600
-    initialDelaySeconds: 30
-    periodSeconds: 5
-  httpRoutePath: "/komga"
-  volumeMounts:
-    - name: config
-      mountPath: /config
-      subPath: komga
-    - name: media
-      mountPath: /data
-      subPath: media/books
-  env:
-    PROWLARR__HOST__URLBASE: "/komga"
+    # Maximum resources the container is allowed to use
+    # Leave empty for unlimited (not recommended for production)
+    limits: {}
+    #   cpu: 1
+    #   memory: 1024Mi
 
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  # ========================================================================
+  # Container Probes (Health Checks)
+  # ========================================================================
+  probes:
+    # OPTIONAL: Liveness probe - restarts container if check fails
+    livenessProbe: {}
+      # httpGet:
+      #   path: /komga/actuator/health
+      #   port: 25600
+      # initialDelaySeconds: 30
+      # periodSeconds: 10
+      # failureThreshold: 1
 
-hostnames: []
+    # OPTIONAL: Readiness probe - removes from Service if check fails
+    readinessProbe: {}
+      # httpGet:
+      #   path: /komga/actuator/health
+      #   port: 25600
+      # initialDelaySeconds: 30
+      # periodSeconds: 5
+
+  # ========================================================================
+  # Volume Mounts
+  # ========================================================================
+  # OPTIONAL: Mount paths for volumes defined in storage.fromClaims
+  # Volumes are provided by external PVCs, not created by this chart
+  volumeMounts: []
+    # - name: config
+    #   mountPath: /config
+    #   subPath: komga
+    # - name: media
+    #   mountPath: /data
+    #   subPath: media/books
+
+  # ========================================================================
+  # Environment Variables & Secrets
+  # ========================================================================
+  environmentData:
+    # OPTIONAL: Plain environment variables as key-value pairs
+    env: {}
+
+    # OPTIONAL: Environment variables injected from Kubernetes Secrets
+    # Each entry references a key within an external Secret
+    envSecrets: []
+      # - name: ENV_VAR_NAME
+      #   secretName: secret-name
+      #   key: secret-key
+
+    # OPTIONAL: Name of a Kubernetes Secret to inject all key-value pairs as env vars
+    # The Secret must exist in the same namespace as the Deployment
+    # Alternative to listing individual envSecrets above
+    envSecretName: ""
+
+  # ========================================================================
+  # Security Context
+  # ========================================================================
+  # OPTIONAL: Pod security settings (user/group IDs, capabilities, etc.)
+  securityContext: {}
+    # runAsUser: 1000
+    # runAsGroup: 1000
+    # fsGroup: 1000
+
+  # ========================================================================
+  # Pod Annotations & Options
+  # ========================================================================
+  # OPTIONAL: Kubernetes annotations applied to the Pod
+  annotations: {}
+
+  # OPTIONAL: Advanced pod configuration options
+  # Supports serviceAccountName, automountServiceAccountToken, dnsPolicy, etc.
+  podOptions: {}
+
+# ============================================================================
+# Gateway/Ingress Configuration
+# ============================================================================
+# Controls how this service is exposed externally via HTTP Gateway (Traefik)
+gateway:
+  # Enable/disable HTTP Gateway ingress for this service
+  enabled: true
+
+  # OPTIONAL: Enable HTTPS (requires cert-manager and valid certificates)
+  secure: false
+
+  # OPTIONAL: Custom domain names for the ingress
+  # If empty, uses the service name as subdomain (e.g., jellyfin.example.com)
+  hostnames: []
+
+  # OPTIONAL: URL path prefix for the service on the domain
+  # Empty = root path (e.g., jellyfin.example.com)
+  # "/komga" = subpath (e.g., example.com/komga)
+  httpRoutePath: ""
+
+# ============================================================================
+# Service Exposure
+# ============================================================================
+# Controls whether this service is accessible within the cluster via DNS
+
+# Expose a ClusterIP Service for internal cluster access to the pod
+# Set to false for services that only need external access via gateway
+exposeService: true
+
+# ============================================================================
+# Storage Configuration
+# ============================================================================
+# Defines which PVCs (Persistent Volume Claims) are attached to this pod
+# IMPORTANT: This chart does NOT create PVCs; they must exist beforehand
+# The 'volumes' chart is responsible for creating cluster-wide PVCs
 
 storage:
-  configClaimName: config-pvc
-  mediaClaimName: media-pvc
+  # OPTIONAL: Existing PVCs to load and make available for mounting
+  # Each PVC reference becomes available as a named volume
+  # Reference these names in pod.volumeMounts above
+  fromClaims:
+    - name: "config"
+      claimName: "config-pvc"
+    - name: "media"
+      claimName: "media-pvc"
 
-gatewayClassName: traefik
+  # OPTIONAL: Additional volumes to add beyond PVCs
+  # Supports ConfigMaps, Secrets, EmptyDir, etc.
+  extraVolumes: []
+    # - name: homepage-config
+    #   configMap:
+    #     name: homepage-config
+    # - name: logs
+    #   emptyDir: {}

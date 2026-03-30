@@ -1,0 +1,24 @@
+app:
+  name: retrom
+  replicas: 1
+
+  pod:
+    image: "ghcr.io/jmberesford/retrom-service:latest"
+    ports:
+      servicePort: 5101
+    volumeMounts:
+      - name: config
+        mountPath: /app/config/
+        subPath: retrom/config
+      - name: config
+        mountPath: /app/data/
+        subPath: retrom/data
+      - name: media
+        mountPath: /app/romlibrary
+        subPath: games/rom-library
+
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - retrom.local

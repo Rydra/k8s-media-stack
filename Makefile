@@ -18,17 +18,16 @@ namespace := media-stack
 
 ### Deployments
 
+bootstrap:
+	# For this to work you'll need to have the secrets deployed beforehand
+	sudo cp traefik/values.yaml /var/lib/rancher/k3s/server/manifests/traefik-custom.yaml
+	$(MAKE) deploy-support
+	$(MAKE) deploy-all
+
 deploy:
 	helm upgrade --install $(chart) charts/$(chart) -n $(namespace) --create-namespace
 
-
-service := radarr
-
-deploy-base:
-	helm upgrade --install $(service) charts/basechart -n $(namespace) --create-namespace --values charts/value-files/values-$(service).yaml
-
-destroy-base:
-	helm uninstall $(service) -n $(namespace)
+service :=
 
 deploy-volumes:
 	helm upgrade --install volumes charts/volumes -n volumes
@@ -36,58 +35,53 @@ deploy-volumes:
 destroy-volumes:
 	helm uninstall volumes -n volumes
 
-deploy-all:
+deploy-support:
+	$(MAKE) deploy-volumes
+	$(MAKE) install-cert-manager-crds
+	$(MAKE) deploy chart=cert-manager
 	$(MAKE) deploy chart=shared
-	$(MAKE) deploy-base service=bazarr
-	$(MAKE) deploy-base service=komga
-	$(MAKE) deploy-base service=lidarr
-	$(MAKE) deploy-base service=mylar3
-	$(MAKE) deploy-base service=prowlarr
-	$(MAKE) deploy-base service=radarr
-	$(MAKE) deploy-base service=sonarr
-	$(MAKE) deploy-base service=readarr
-	$(MAKE) deploy-base service=metube
 
+deploy-all:
+	$(MAKE) deploy chart=bazarr
+	$(MAKE) deploy chart=komga
+	$(MAKE) deploy chart=kapowarr
+	$(MAKE) deploy chart=prowlarr
+	$(MAKE) deploy chart=radarr
+	$(MAKE) deploy chart=sonarr
+	$(MAKE) deploy chart=metube
 	$(MAKE) deploy chart=qbittorrent
 	$(MAKE) deploy chart=paperless-ngx
 	$(MAKE) deploy chart=jellyfin
 	$(MAKE) deploy chart=flaresolverr
+	$(MAKE) deploy chart=vaultwarden
+	$(MAKE) deploy chart=immich
+	$(MAKE) deploy chart=homepage
+	$(MAKE) deploy chart=romm
 
 destroy-all:
-	-$(MAKE) destroy-base service=bazarr
-	-$(MAKE) destroy-base service=komga
-	-$(MAKE) destroy-base service=lidarr
-	-$(MAKE) destroy-base service=mylar3
-	-$(MAKE) destroy-base service=prowlarr
-	-$(MAKE) destroy-base service=radarr
-	-$(MAKE) destroy-base service=sonarr
-	-$(MAKE) destroy-base service=readarr
-	-$(MAKE) destroy-base service=metube
-
-
+	-$(MAKE) destroy chart=bazarr
+	-$(MAKE) destroy chart=komga
+	-$(MAKE) destroy chart=kapowarr
+	-$(MAKE) destroy chart=prowlarr
+	-$(MAKE) destroy chart=radarr
+	-$(MAKE) destroy chart=sonarr
+	-$(MAKE) destroy chart=metube
 	-$(MAKE) destroy chart=qbittorrent
 	-$(MAKE) destroy chart=paperless-ngx
 	-$(MAKE) destroy chart=jellyfin
 	-$(MAKE) destroy chart=flaresolverr
-	-$(MAKE) destroy chart=shared
+	-$(MAKE) destroy chart=vaultwarden
+	-$(MAKE) destroy chart=immich
+	-$(MAKE) destroy chart=homepage
+	-$(MAKE) destroy chart=romm
 
-deploy-immich:
-	# Immich offers a helm chart, so we'll use that alongside our values.yaml
-	helm upgrade --install --create-namespace -n $(namespace) immich oci://ghcr.io/immich-app/immich-charts/immich -f charts/value-files/immich.yaml
-	$(MAKE) deploy chart=immich-db
-	$(MAKE) deploy chart=immich-support
-
-destroy-immich:
-	helm uninstall immich -n $(namespace)
-	$(MAKE) deploy chart=immich-db
-	$(MAKE) deploy chart=immich-support
 
 destroy:
 	helm uninstall $(chart) -n $(namespace)
 
-deploy-cert-manager:
-	# kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
-	$(MAKE) deploy chart=cert-manager
+install-cert-manager-crds:
+	# cert-manager is a dependency of some of our charts, so we'll install it first
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
 
 ### Scaling services
 
@@ -130,6 +124,38 @@ scale-up-all:
 
 ### Immich has high memory usage, so we'll scale it down separately
 
+update-deps:
+	# No need to update all repositories every single time
+	helm dependency update charts/$(chart) --skip-refresh
+
+update-deps-all:
+	$(MAKE) update-deps chart=bazarr
+	$(MAKE) update-deps chart=komga
+	$(MAKE) update-deps chart=kapowarr
+	$(MAKE) update-deps chart=prowlarr
+	$(MAKE) update-deps chart=radarr
+	$(MAKE) update-deps chart=sonarr
+	$(MAKE) update-deps chart=metube
+	$(MAKE) update-deps chart=qbittorrent
+	$(MAKE) update-deps chart=paperless-ngx
+	$(MAKE) update-deps chart=jellyfin
+	$(MAKE) update-deps chart=flaresolverr
+	$(MAKE) update-deps chart=vaultwarden
+	$(MAKE) update-deps chart=immich
+	$(MAKE) update-deps chart=homepage
+	$(MAKE) update-deps chart=romm
+
+	# Other deps
+	$(MAKE) update-deps chart=amule
+	$(MAKE) update-deps chart=sabnzbd
+	$(MAKE) update-deps chart=retrom
+	$(MAKE) update-deps chart=readarr
+	$(MAKE) update-deps chart=lidarr
+	$(MAKE) update-deps chart=mylar3
+	$(MAKE) update-deps chart=gaseous
+	$(MAKE) update-deps chart=gameyfin
+	$(MAKE) update-deps chart=gamevault
+
 scale-down-immich:
 	kubectl scale deployment immich-server --replicas=0 -n $(namespace)
 	kubectl scale deployment immich-db --replicas=0 -n $(namespace)
@@ -148,14 +174,25 @@ scale-down-paperless:
 scale-up-paperless:
 	kubectl scale deployment paperless-ngx --replicas=1 -n $(namespace)
 
+scale-down-gamevault:
+	$(MAKE) scale-down service=gamevault
+	$(MAKE) scale-down service=gamevault-db
+
 ### Management
 
 env_vars ?=
 CONSTRUCTED_ARGS = $(foreach item,$(MY_LIST),--arg=$(item))
 
 set-homepage-secrets:
+	-kubectl delete secret homepage-secret-env -n $(namespace)
 	kubectl create secret generic homepage-secret-env -n $(namespace) \
 	$(foreach item,$(env_vars),--from-literal $(item))
+
+set-secrets:
+	-kubectl delete secret $(name) -n $(namespace)
+	kubectl create secret generic $(name) -n $(namespace) \
+	$(foreach item,$(env_vars),--from-literal $(item))
+
 
 install-gateway-crds:
 	kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
@@ -169,3 +206,12 @@ install-ingress-controller:
 configure-traefik:
 	# In k3s you need to configure traefik
 	helm install traefik traefik/traefik -f charts/traefik/values.yaml --wait
+
+install-reloader:
+	helm repo add stakater https://stakater.github.io/stakater-charts
+	helm repo update
+	helm install reloader stakater/reloader -n default
+
+## Quality checks
+lint:
+	helm lint charts/$(chart)
