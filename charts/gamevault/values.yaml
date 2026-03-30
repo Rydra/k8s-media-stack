@@ -2,7 +2,11 @@ app:
   name: gamevault
   image: "phalcode/gamevault-backend:latest"
   replicas: 1
-  servicePort: 8080
+
+  pod:
+    ports:
+      servicePort: 8080
+
   gateway:
     enabled: true
     httpRoutePath: "/"
@@ -40,7 +44,11 @@ database:
   name: gamevault-db
   image: "postgres:17"
   replicas: 1
-  servicePort: 5432
+
+  pod:
+    ports:
+      servicePort: 5432
+
   gateway:
     enabled: false
   volumeMounts:

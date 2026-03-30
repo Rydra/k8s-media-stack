@@ -8,9 +8,9 @@ metadata:
 spec:
   ports:
     - name: "http"
-      port: {{ .Values.servicePort }}
+      port: {{ .Values.pod.ports.servicePort }}
       protocol: TCP
-      targetPort: {{ .Values.servicePort }}
+      targetPort: {{ .Values.pod.ports.servicePort }}
   selector:
     app.kubernetes.io/name: {{ .Values.name }}
 {{- end }}

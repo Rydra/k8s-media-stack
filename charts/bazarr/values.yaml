@@ -2,10 +2,15 @@ app:
   name: bazarr
   image: "lscr.io/linuxserver/bazarr:latest"
   replicas: 1
-  servicePort: 6767
+
+  pod:
+    ports:
+      servicePort: 6767
+
   gateway:
     enabled: true
     httpRoutePath: "/bazarr"
+
   resources:
     requests:
       cpu: 200m
@@ -13,6 +18,7 @@ app:
     limits:
       cpu: 1
       memory: 1024Mi
+
   volumeMounts:
     - name: config
       mountPath: /config
@@ -26,6 +32,7 @@ app:
     - name: media
       mountPath: /media/movies
       subPath: media/movies
+
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000

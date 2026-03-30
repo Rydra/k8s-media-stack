@@ -2,7 +2,11 @@ app:
   name: readarr
   image: "linuxserver/readarr:0.4.19-nightly"
   replicas: 1
-  servicePort: 8787
+
+  pod:
+    ports:
+      servicePort: 8787
+
   gateway:
     enabled: true
     httpRoutePath: "/readarr"

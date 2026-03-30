@@ -2,7 +2,11 @@ app:
   name: gaseous
   image: "gaseousgames/gaseousserver:latest"
   replicas: 1
-  servicePort: 80
+
+  pod:
+    ports:
+      servicePort: 80
+
   gateway:
     enabled: true
     httpRoutePath: "/"
@@ -42,9 +46,13 @@ database:
   name: gaseous-db
   image: "mariadb:latest"
   replicas: 1
+
+  pod:
+    ports:
+      servicePort: 3306
+
   gateway:
     enabled: false
-  servicePort: 3306
   resources:
     requests:
       cpu: 500m

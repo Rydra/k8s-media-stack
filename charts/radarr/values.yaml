@@ -2,7 +2,11 @@ app:
   name: radarr
   image: "lscr.io/linuxserver/radarr:latest"
   replicas: 1
-  servicePort: 7878
+
+  pod:
+    ports:
+      servicePort: 7878
+
   gateway:
     enabled: true
     httpRoutePath: "/radarr"

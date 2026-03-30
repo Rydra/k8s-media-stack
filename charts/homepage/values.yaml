@@ -5,7 +5,11 @@ app:
   name: homepage
   image: "ghcr.io/gethomepage/homepage:latest"
   replicas: 1
-  servicePort: 3000
+
+  pod:
+    ports:
+      servicePort: 3000
+
   gateway:
     enabled: true
     httpRoutePath: "/"

@@ -56,14 +56,14 @@ spec:
             {{- toYaml .Values.probes.readinessProbe | nindent 12 }}
           {{- end }}
           ports:
-            - containerPort: {{ .Values.servicePort }}
+            - containerPort: {{ .Values.pod.ports.servicePort }}
               protocol: TCP
-            {{- range .Values.extraPorts}}
+            {{- range .Values.pod.ports.extraPorts}}
             - containerPort: {{ .port }}
               protocol: {{ .protocol | default "TCP" }}
               name: {{ .name }}
             {{- end }}
-            {{- range .Values.hostPorts }}
+            {{- range .Values.pod.ports.hostPorts }}
             - containerPort: {{ .port }}
               protocol: {{ .protocol | default "TCP" }}
               name: {{ .name }}

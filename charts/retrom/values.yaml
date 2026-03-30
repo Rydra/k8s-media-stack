@@ -2,7 +2,11 @@ app:
   name: retrom
   image: "ghcr.io/jmberesford/retrom-service:latest"
   replicas: 1
-  servicePort: 5101
+
+  pod:
+    ports:
+      servicePort: 5101
+
   gateway:
     enabled: true
     httpRoutePath: "/"

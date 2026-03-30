@@ -2,7 +2,11 @@ app:
   name: prowlarr
   image: "linuxserver/prowlarr:latest"
   replicas: 1
-  servicePort: 9696
+
+  pod:
+    ports:
+      servicePort: 9696
+
   gateway:
     enabled: true
     httpRoutePath: "/prowlarr"

@@ -2,7 +2,11 @@ app:
   name: mylar3
   image: "lscr.io/linuxserver/mylar3:latest"
   replicas: 1
-  servicePort: 8090
+
+  pod:
+    ports:
+      servicePort: 8090
+
   gateway:
     enabled: true
     httpRoutePath: "/mylar3"

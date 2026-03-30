@@ -2,7 +2,11 @@ app:
   name: sabnzbd
   image: "lscr.io/linuxserver/sabnzbd:latest"
   replicas: 1
-  servicePort: 8080
+
+  pod:
+    ports:
+      servicePort: 8080
+
   gateway:
     enabled: true
     httpRoutePath: "/"

@@ -2,7 +2,11 @@ app:
   name: lidarr
   image: "lscr.io/linuxserver/lidarr:latest"
   replicas: 1
-  servicePort: 8686
+
+  pod:
+    ports:
+      servicePort: 8686
+
   gateway:
     enabled: true
     httpRoutePath: "/lidarr"

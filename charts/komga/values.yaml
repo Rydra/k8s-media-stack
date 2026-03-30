@@ -2,7 +2,11 @@ app:
   name: komga
   image: "gotson/komga:latest"
   replicas: 1
-  servicePort: 25600
+
+  pod:
+    ports:
+      servicePort: 25600
+
   gateway:
     enabled: true
     httpRoutePath: "/komga"

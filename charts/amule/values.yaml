@@ -2,22 +2,27 @@ app:
   name: amule
   image: "ngosang/amule:latest"
   replicas: 1
-  servicePort: 4711
-  extraPorts:
-    - name: amule-tcp
-      port: 4662
-      protocol: TCP
-    - name: amule-udp
-      port: 4665
-      protocol: UDP
-    - name: extended-udp
-      port: 4672
-      protocol: UDP
+
+  pod:
+    ports:
+      servicePort: 4711
+      extraPorts:
+        - name: amule-tcp
+          port: 4662
+          protocol: TCP
+        - name: amule-udp
+          port: 4665
+          protocol: UDP
+        - name: extended-udp
+          port: 4672
+          protocol: UDP
+
   gateway:
     enabled: true
     httpRoutePath: "/"
     hostnames:
       - amule.local
+
   volumeMounts:
     - name: config
       mountPath: /home/amule/.aMule
@@ -28,6 +33,7 @@ app:
     - name: media
       mountPath: /temp
       subPath: downloads/amule/temp
+
   environmentData:
     env:
       MOD_AUTO_RESTART_ENABLED: "true"

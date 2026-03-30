@@ -2,7 +2,11 @@ app:
   name: flaresolverr
   image: "ghcr.io/flaresolverr/flaresolverr:latest"
   replicas: 1
-  servicePort: 8191
+
+  pod:
+    ports:
+      servicePort: 8191
+
   gateway:
     enabled: false
   securityContext:

@@ -1,7 +1,11 @@
 app:
   name: kapowarr
   image: "mrcas/kapowarr:latest"
-  servicePort: 5656
+
+  pod:
+    ports:
+      servicePort: 5656
+
   gateway:
     enabled: true
     httpRoutePath: "/kapowarr"

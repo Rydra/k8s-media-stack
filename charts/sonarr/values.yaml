@@ -2,7 +2,11 @@ app:
   name: sonarr
   image: "linuxserver/sonarr:latest"
   replicas: 1
-  servicePort: 8989
+
+  pod:
+    ports:
+      servicePort: 8989
+
   gateway:
     enabled: true
     httpRoutePath: "/sonarr"

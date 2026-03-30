@@ -2,7 +2,11 @@ app:
   name: gameyfin
   image: "ghcr.io/gameyfin/gameyfin:2"
   replicas: 1
-  servicePort: 8080
+
+  pod:
+    ports:
+      servicePort: 8080
+
   gateway:
     enabled: true
     httpRoutePath: "/"

@@ -1,7 +1,11 @@
 app:
   name: paperless-ngx
   image: "ghcr.io/paperless-ngx/paperless-ngx:latest"
-  servicePort: 8000
+
+  pod:
+    ports:
+      servicePort: 8000
+
   gateway:
     enabled: true
     httpRoutePath: "/paperless"
@@ -36,7 +40,11 @@ app:
 database:
   name: paperless-db
   image: "docker.io/library/postgres:15"
-  servicePort: 5432
+
+  pod:
+    ports:
+      servicePort: 5432
+
   gateway:
     enabled: false
   volumeMounts:
@@ -61,9 +69,13 @@ gotenberg:
   commandArgs:
     - "--chromium-disable-javascript=true"
     - "--chromium-allow-list=file:///tmp/.*"
+
+  pod:
+    ports:
+      servicePort: 3000
+
   gateway:
     enabled: false
-  servicePort: 3000
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
@@ -72,9 +84,13 @@ gotenberg:
 tika:
   name: paperless-tika
   image: "apache/tika:3.2.3.0-full"
+
+  pod:
+    ports:
+      servicePort: 9998
+
   gateway:
     enabled: false
-  servicePort: 9998
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
@@ -83,9 +99,13 @@ tika:
 redis:
   name: paperless-redis
   image: "docker.io/library/redis:7"
+
+  pod:
+    ports:
+      servicePort: 6379
+
   gateway:
     enabled: false
-  servicePort: 6379
   volumeMounts:
     - name: config
       mountPath: /data

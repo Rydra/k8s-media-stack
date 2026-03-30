@@ -6,14 +6,26 @@
 name: ""
 image: ""
 replicas: 1
-servicePort: 25600
+
+pod:
+  ports:
+    servicePort: 25600
+    extraPorts: []
+      # - name: amule-tcp
+      #   port: 4662
+      #   protocol: TCP
+      # - name: amule-udp
+      #   port: 4665
+      #   protocol: UDP
+      # - name: extended-udp
+      #   port: 4672
+      #   protocol: UDP
+    hostPorts: []
+      # - name: "amule-tcp"
+      #   port: 4662
+      #   protocol: TCP
 
 annotations: {}
-
-hostPorts: []
-  #- name: "amule-tcp"
-  #  port: 4662
-  #  protocol: TCP
 
 podOptions: {}
 

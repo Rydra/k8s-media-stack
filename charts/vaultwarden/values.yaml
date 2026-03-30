@@ -2,7 +2,11 @@ app:
   name: vaultwarden
   image: "vaultwarden/server:latest"
   replicas: 1
-  servicePort: 80
+
+  pod:
+    ports:
+      servicePort: 80
+
   gateway:
     enabled: true
     httpRoutePath: "/"

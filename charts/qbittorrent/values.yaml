@@ -2,14 +2,18 @@ app:
   name: qbittorrent
   image: "linuxserver/qbittorrent:latest"
   replicas: 1
-  servicePort: 8080
-  extraPorts:
-    - name: torrenting-tcp
-      port: 6881
-      protocol: TCP
-    - name: torrenting-udp
-      port: 6881
-      protocol: UDP
+
+  pod:
+    ports:
+      servicePort: 8080
+      extraPorts:
+        - name: torrenting-tcp
+          port: 6881
+          protocol: TCP
+        - name: torrenting-udp
+          port: 6881
+          protocol: UDP
+
   gateway:
     enabled: true
     httpRoutePath: "/"

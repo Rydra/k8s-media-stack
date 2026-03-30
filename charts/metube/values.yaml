@@ -2,7 +2,11 @@ app:
   name: metube
   image: "ghcr.io/alexta69/metube"
   replicas: 1
-  servicePort: 8081
+
+  pod:
+    ports:
+      servicePort: 8081
+
   gateway:
     enabled: true
     httpRoutePath: "/metube"
