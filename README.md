@@ -204,6 +204,8 @@ make destroy-all
 
 ## Legal Notice
 
-This project provides deployment tools for media services. Users are responsible for ensuring their
+- This project provides deployment tools for media services. Users are responsible for ensuring their
 use complies with applicable laws and service terms. These tools have legitimate uses
 for personal media management, but may not be legal in all jurisdictions or for all use cases.
+
+- This project is for educational purposes. The author does not condone or support the use of these tools for copyright infringement.
