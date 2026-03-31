@@ -189,9 +189,10 @@ set-homepage-secrets:
 	$(foreach item,$(env_vars),--from-literal $(item))
 
 set-secrets:
-	-kubectl delete secret $(name) -n $(namespace)
-	kubectl create secret generic $(name) -n $(namespace) \
-	$(foreach item,$(env_vars),--from-literal $(item))
+	@-kubectl delete secret $(name) -n $(namespace)
+	@echo "Paste your env file content (Ctrl+D when done):"
+	@echo "Format: KEY=VALUE (one per line, no spaces between key and value and no quotes, lines starting with # are ignored)"
+	@cat | awk -F'=' '/^[^#]/ && NF==2 {printf "--from-literal=%s=%s ", $$1, $$2}' | xargs -r kubectl create secret generic $(name) -n $(namespace)
 
 
 install-gateway-crds:
