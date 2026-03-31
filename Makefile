@@ -21,6 +21,7 @@ namespace := media-stack
 bootstrap:
 	# For this to work you'll need to have the secrets deployed beforehand
 	sudo cp traefik/values.yaml /var/lib/rancher/k3s/server/manifests/traefik-custom.yaml
+	$(MAKE) update-deps-all
 	$(MAKE) deploy-support
 	$(MAKE) deploy-all
 
