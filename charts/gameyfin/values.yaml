@@ -1,39 +1,37 @@
 app:
   name: gameyfin
-  image: "ghcr.io/gameyfin/gameyfin:2"
   replicas: 1
-
   pod:
+    image: "ghcr.io/gameyfin/gameyfin:2"
     ports:
       servicePort: 8080
+    volumeMounts:
+      - name: config
+        mountPath: /opt/gameyfin/db
+        subPath: gameyfin/db
+      - name: config
+        mountPath: /opt/gameyfin/data
+        subPath: gameyfin/data
+      - name: config
+        mountPath: /opt/gameyfin/plugindata
+        subPath: gameyfin/plugindata
+      - name: config
+        mountPath: /opt/gameyfin/logs
+        subPath: gameyfin/logs
+      - name: media
+        mountPath: /romlibrary
+        subPath: games/rom-library
+    environmentData:
+      env:
+        PUID: "1000"
+        PGID: "1000"
+      envSecrets:
+        - name: APP_KEY
+          secretName: gameyfin-secrets
+          key: APP_KEY
 
   gateway:
     enabled: true
     httpRoutePath: "/"
     hostnames:
       - gameyfin.local
-
-  volumeMounts:
-    - name: config
-      mountPath: /opt/gameyfin/db
-      subPath: gameyfin/db
-    - name: config
-      mountPath: /opt/gameyfin/data
-      subPath: gameyfin/data
-    - name: config
-      mountPath: /opt/gameyfin/plugindata
-      subPath: gameyfin/plugindata
-    - name: config
-      mountPath: /opt/gameyfin/logs
-      subPath: gameyfin/logs
-    - name: media
-      mountPath: /romlibrary
-      subPath: games/rom-library
-  environmentData:
-    env:
-      PUID: "1000"
-      PGID: "1000"
-    envSecrets:
-      - name: APP_KEY
-        secretName: gameyfin-secrets
-        key: APP_KEY
