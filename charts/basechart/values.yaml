@@ -67,6 +67,9 @@ pod:
       #   port: 4662
       #   protocol: TCP
 
+  command: []
+  args: []
+
   # ========================================================================
   # Resource Management
   # ========================================================================
@@ -139,6 +142,7 @@ pod:
   # ========================================================================
   # OPTIONAL: Pod security settings (user/group IDs, capabilities, etc.)
   securityContext: {}
+    # runAsNonRoot: true
     # runAsUser: 1000
     # runAsGroup: 1000
     # fsGroup: 1000

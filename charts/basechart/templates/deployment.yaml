@@ -37,13 +37,13 @@ spec:
       containers:
         - image: {{ .Values.pod.image | required "Please provide an image for the service you want to deploy" }}
           name: {{ .Values.name }}
-          {{- if .Values.command }}
+          {{- if .Values.pod.command }}
           command:
-            {{- toYaml .Values.command | nindent 12 }}
+            {{- toYaml .Values.pod.command | nindent 12 }}
           {{- end }}
-          {{- if .Values.commandArgs }}
+          {{- if .Values.pod.args }}
           args:
-            {{- toYaml .Values.commandArgs | nindent 12 }}
+            {{- toYaml .Values.pod.args | nindent 12 }}
           {{- end }}
           resources:
             {{- toYaml .Values.pod.resources | nindent 12 }}

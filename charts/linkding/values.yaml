@@ -1,0 +1,30 @@
+app:
+  name: linkding
+  replicas: 1
+  pod:
+    image: "ghcr.io/sissbruecker/linkding:latest"
+    ports:
+      servicePort: 9090
+    volumeMounts:
+      - name: media
+        mountPath: /etc/linkding/data
+        subPath: linkding
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    environmentData:
+      envSecrets:
+        - name: LD_SUPERUSER_NAME
+          secretName: linkding-secrets
+          key: LD_SUPERUSER_NAME
+        - name: LD_SUPERUSER_PASSWORD
+          secretName: linkding-secrets
+          key: LD_SUPERUSER_PASSWORD
+
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - linkding.local

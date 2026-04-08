@@ -1,0 +1,54 @@
+app:
+  name: pydiocells
+  replicas: 1
+  pod:
+    image: "pydio/cells:latest"
+    ports:
+      servicePort: 8080
+    volumeMounts:
+      - name: config
+        mountPath: /var/cells
+        subPath: pydiocells
+      - name: media
+        mountPath: /var/cells/data
+        subPath: pydiocells-data
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    environmentData:
+      env:
+        CELLS_SITE_NO_TLS: "1"
+
+  gateway:
+    enabled: true
+    httpRoutePath: "/"
+    hostnames:
+      - pydiocells.local
+
+db:
+  name: pydiocells-db
+  replicas: 1
+  pod:
+    image: "mysql:8"
+    ports:
+      servicePort: 3306
+    volumeMounts:
+      - name: config
+        mountPath: /var/lib/mysql
+        subPath: pydiocells-db
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    environmentData:
+      env:
+        MYSQL_ROOT_PASSWORD: P@ssw0rd
+        MYSQL_DATABASE: cells
+        MYSQL_USER: pydio
+        MYSQL_PASSWORD: P@ssw0rd
+    command:
+      - "mysqld"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"

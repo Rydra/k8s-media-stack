@@ -1,2 +1,3 @@
 *.tgz
 *.secret
+charts/filebrowser/values.yaml
